@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/**
+ * PROJECT NEXUS // GLOBAL STYLESHEET
+ * Responsibility: Resets default browser margins, clamps body height to prevent 
+ * screen-space scrolling, and establishes the dark, brutalist background colors.
+ */
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --font-inter:
+    Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-fira-code: "Fira Code", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom styles for our WebGL canvas */
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Custom scrollbar hides for DOM overlays */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
