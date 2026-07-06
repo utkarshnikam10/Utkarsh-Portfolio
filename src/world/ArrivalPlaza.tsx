@@ -7,15 +7,21 @@ import { Html } from "@react-three/drei";
 import { useStore } from "@/store/useStore";
 import { AudioEngine } from "@/audio/AudioEngine";
 
+interface PlazaLandmarkProps {
+  id: "library" | "workshop" | "tree" | "mailbox";
+  label: string;
+  position: [number, number, number];
+  geometryType: "box" | "dodecahedron" | "tetrahedron" | "cylinder";
+}
+
 /**
- * Clickable navigation object inside the Arrival Plaza.
- * Represents the ⚙️ Workshop / Projects node.
+ * Reusable, clickable landmark node representing an interactive section of the world.
  */
-function WorkshopPedestal() {
+function PlazaLandmark({ id, label, position, geometryType }: PlazaLandmarkProps) {
   const [hovered, setHovered] = useState(false);
   const focusedObject = useStore((state) => state.focusedObject);
   const setFocusedObject = useStore((state) => state.setFocusedObject);
-  const sphereRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
 
   // Sync cursor state when hovering
   useEffect(() => {
@@ -29,20 +35,20 @@ function WorkshopPedestal() {
     };
   }, [hovered, focusedObject]);
 
-  // Animate the floating mechanical element
+  // Animate the floating element
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
 
-    if (sphereRef.current) {
-      sphereRef.current.rotation.y = elapsed * 0.8;
-      sphereRef.current.rotation.x = elapsed * 0.4;
+    if (meshRef.current) {
+      meshRef.current.rotation.y = elapsed * 0.8;
+      meshRef.current.rotation.x = elapsed * 0.4;
       // Pulse scale slightly if hovered
       const pulseFactor =
         hovered && focusedObject === null ? 1.15 + Math.sin(elapsed * 8) * 0.04 : 1.0;
-      sphereRef.current.scale.setScalar(pulseFactor);
+      meshRef.current.scale.setScalar(pulseFactor);
 
       // Floating motion
-      sphereRef.current.position.y = 0.4 + Math.sin(elapsed * 2.0) * 0.05;
+      meshRef.current.position.y = 0.4 + Math.sin(elapsed * 2.0) * 0.05;
     }
   });
 
@@ -61,13 +67,13 @@ function WorkshopPedestal() {
     if (focusedObject !== null) return;
     e.stopPropagation();
     AudioEngine.playClickTone();
-    setFocusedObject("workshop");
+    setFocusedObject(id);
     setHovered(false);
   };
 
   return (
     <group
-      position={[2.5, 0.4, -1.0]}
+      position={position}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
       onClick={handleClick}
@@ -78,9 +84,13 @@ function WorkshopPedestal() {
         <meshStandardMaterial color="#1f1f28" roughness={0.7} metalness={0.2} />
       </mesh>
 
-      {/* Floating Mechanical Node (glowing dodecahedron) */}
-      <mesh ref={sphereRef} position={[0, 0.4, 0]} castShadow>
-        <dodecahedronGeometry args={[0.18, 0]} />
+      {/* Floating Node */}
+      <mesh ref={meshRef} position={[0, 0.4, 0]} castShadow>
+        {geometryType === "box" && <boxGeometry args={[0.22, 0.22, 0.22]} />}
+        {geometryType === "dodecahedron" && <dodecahedronGeometry args={[0.18, 0]} />}
+        {geometryType === "tetrahedron" && <tetrahedronGeometry args={[0.18, 0]} />}
+        {geometryType === "cylinder" && <cylinderGeometry args={[0.12, 0.12, 0.24, 16]} />}
+
         <meshStandardMaterial
           color={hovered && focusedObject === null ? "#ffe2b3" : "#bfb0a0"}
           emissive={hovered && focusedObject === null ? "#ffd69e" : "#000000"}
@@ -104,8 +114,8 @@ function WorkshopPedestal() {
       {hovered && focusedObject === null && (
         <Html distanceFactor={6} position={[0, 0.8, 0]} center>
           <div className="select-none pointer-events-none px-2.5 py-1 bg-zinc-950/90 border border-zinc-800/80 backdrop-blur-md rounded shadow-xl whitespace-nowrap">
-            <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-wider text-amber-200">
-              ⚙️ Workshop // Projects
+            <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-wider text-amber-250">
+              {label}
             </span>
           </div>
         </Html>
@@ -282,8 +292,31 @@ export function ArrivalPlaza() {
         </mesh>
       </group>
 
-      {/* Interaction Redesign Clickable Workshop Node */}
-      <WorkshopPedestal />
+      {/* Clickable Landmarks representing Portfolio Districts */}
+      <PlazaLandmark
+        id="library"
+        label="📚 Library // About"
+        position={[-2.5, 0.4, -1.0]}
+        geometryType="box"
+      />
+      <PlazaLandmark
+        id="workshop"
+        label="⚙️ Workshop // Projects"
+        position={[2.5, 0.4, -1.0]}
+        geometryType="dodecahedron"
+      />
+      <PlazaLandmark
+        id="tree"
+        label="🌳 Tree // Philosophy"
+        position={[0.0, 0.4, -4.5]}
+        geometryType="tetrahedron"
+      />
+      <PlazaLandmark
+        id="mailbox"
+        label="📬 Mailbox // Contact"
+        position={[2.5, 0.4, 2.5]}
+        geometryType="cylinder"
+      />
     </group>
   );
 }

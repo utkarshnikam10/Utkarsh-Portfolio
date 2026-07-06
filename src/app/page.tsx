@@ -2,7 +2,11 @@
 
 import React from "react";
 import CanvasContainer from "@/components/canvas/CanvasContainer";
+import HUD from "@/components/dom/HUD";
+import AboutDossier from "@/components/dom/sections/AboutDossier";
 import ProjectsDossier from "@/components/dom/sections/ProjectsDossier";
+import PhilosophyDossier from "@/components/dom/sections/PhilosophyDossier";
+import ContactDossier from "@/components/dom/sections/ContactDossier";
 import { useStore } from "@/store/useStore";
 
 export default function Home() {
@@ -24,7 +28,7 @@ export default function Home() {
               PROJECT NEXUS
             </h1>
             <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-widest text-zinc-500 mt-1 block">
-              MINIATURE ARCHIVE WORLD // PROTOTYPE 1.0
+              MINIATURE ARCHIVE WORLD // PROTOTYPE 1.1
             </span>
           </div>
           <div className="text-right">
@@ -47,8 +51,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Projects Dossier Content Slide-in Panel */}
+      {/* Spatial HUD Compass navigation menu */}
+      <HUD />
+
+      {/* Dossier Content Slide-in Panels */}
+      <AboutDossier />
       <ProjectsDossier />
+      <PhilosophyDossier />
+      <ContactDossier />
     </main>
   );
 }

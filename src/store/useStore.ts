@@ -23,7 +23,7 @@ export type CameraMode = "intro" | "guided" | "focus" | "free";
 export type ActiveScene =
   "opening" | "about" | "journey" | "projects" | "skills" | "process" | "vision" | "contact";
 
-export type FocusedObject = "workshop" | null;
+export type FocusedObject = "library" | "workshop" | "tree" | "mailbox" | null;
 
 interface StoreState {
   // ──────────────────── Navigation ────────────────────
