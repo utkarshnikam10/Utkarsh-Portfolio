@@ -23,6 +23,8 @@ export type CameraMode = "intro" | "guided" | "focus" | "free";
 export type ActiveScene =
   "opening" | "about" | "journey" | "projects" | "skills" | "process" | "vision" | "contact";
 
+export type FocusedObject = "workshop" | null;
+
 interface StoreState {
   // ──────────────────── Navigation ────────────────────
   /** Active narrative district */
@@ -82,9 +84,18 @@ interface StoreState {
   /** Active narrative scene */
   activeScene: ActiveScene;
   setActiveScene: (scene: ActiveScene) => void;
+
+  // ──────────────────── Redesign Interaction ────────────────────
+  /** Active focused 3D object for navigation */
+  focusedObject: FocusedObject;
+  setFocusedObject: (obj: FocusedObject) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
+  // Redesign Interaction
+  focusedObject: null,
+  setFocusedObject: (obj) => set({ focusedObject: obj }),
+
   // Scroll-Motion
   scrollProgress: 0,
   setScrollProgress: (progress) => set({ scrollProgress: progress }),

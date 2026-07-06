@@ -1,8 +1,118 @@
 "use client";
 
-import React, { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import React, { useRef, useState, useEffect } from "react";
+import { useFrame, ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
+import { Html } from "@react-three/drei";
+import { useStore } from "@/store/useStore";
+import { AudioEngine } from "@/audio/AudioEngine";
+
+/**
+ * Clickable navigation object inside the Arrival Plaza.
+ * Represents the ⚙️ Workshop / Projects node.
+ */
+function WorkshopPedestal() {
+  const [hovered, setHovered] = useState(false);
+  const focusedObject = useStore((state) => state.focusedObject);
+  const setFocusedObject = useStore((state) => state.setFocusedObject);
+  const sphereRef = useRef<THREE.Mesh>(null);
+
+  // Sync cursor state when hovering
+  useEffect(() => {
+    if (focusedObject === null) {
+      document.body.style.cursor = hovered ? "pointer" : "auto";
+    } else {
+      document.body.style.cursor = "auto";
+    }
+    return () => {
+      document.body.style.cursor = "auto";
+    };
+  }, [hovered, focusedObject]);
+
+  // Animate the floating mechanical element
+  useFrame((state) => {
+    const elapsed = state.clock.getElapsedTime();
+
+    if (sphereRef.current) {
+      sphereRef.current.rotation.y = elapsed * 0.8;
+      sphereRef.current.rotation.x = elapsed * 0.4;
+      // Pulse scale slightly if hovered
+      const pulseFactor =
+        hovered && focusedObject === null ? 1.15 + Math.sin(elapsed * 8) * 0.04 : 1.0;
+      sphereRef.current.scale.setScalar(pulseFactor);
+
+      // Floating motion
+      sphereRef.current.position.y = 0.4 + Math.sin(elapsed * 2.0) * 0.05;
+    }
+  });
+
+  const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
+    if (focusedObject !== null) return;
+    e.stopPropagation();
+    setHovered(true);
+    AudioEngine.playHoverTone();
+  };
+
+  const handlePointerOut = () => {
+    setHovered(false);
+  };
+
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    if (focusedObject !== null) return;
+    e.stopPropagation();
+    AudioEngine.playClickTone();
+    setFocusedObject("workshop");
+    setHovered(false);
+  };
+
+  return (
+    <group
+      position={[2.5, 0.4, -1.0]}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+      onClick={handleClick}
+    >
+      {/* Base: Concrete cylindrical stand */}
+      <mesh castShadow receiveShadow position={[0, -0.2, 0]}>
+        <cylinderGeometry args={[0.3, 0.35, 0.6, 24]} />
+        <meshStandardMaterial color="#1f1f28" roughness={0.7} metalness={0.2} />
+      </mesh>
+
+      {/* Floating Mechanical Node (glowing dodecahedron) */}
+      <mesh ref={sphereRef} position={[0, 0.4, 0]} castShadow>
+        <dodecahedronGeometry args={[0.18, 0]} />
+        <meshStandardMaterial
+          color={hovered && focusedObject === null ? "#ffe2b3" : "#bfb0a0"}
+          emissive={hovered && focusedObject === null ? "#ffd69e" : "#000000"}
+          emissiveIntensity={hovered && focusedObject === null ? 0.8 : 0.0}
+          roughness={0.1}
+          metalness={0.9}
+        />
+      </mesh>
+
+      {/* Outer activation projection ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.49, 0]}>
+        <ringGeometry args={[0.4, 0.42, 32]} />
+        <meshBasicMaterial
+          color={hovered && focusedObject === null ? "#ffd69e" : "#3a3a45"}
+          transparent
+          opacity={0.6}
+        />
+      </mesh>
+
+      {/* R3F Drei HTML overlay label */}
+      {hovered && focusedObject === null && (
+        <Html distanceFactor={6} position={[0, 0.8, 0]} center>
+          <div className="select-none pointer-events-none px-2.5 py-1 bg-zinc-950/90 border border-zinc-800/80 backdrop-blur-md rounded shadow-xl whitespace-nowrap">
+            <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-wider text-amber-200">
+              ⚙️ Workshop // Projects
+            </span>
+          </div>
+        </Html>
+      )}
+    </group>
+  );
+}
 
 /**
  * PROJECT NEXUS // ARRIVAL PLAZA DISTRICT
@@ -10,8 +120,6 @@ import * as THREE from "three";
  * Art Direction: Biophilic design, Apple Park meets Japanese Zen Garden,
  * Scandinavian minimalism. Concrete slabs, natural stone, gravel paths,
  * small plants, stylized trees, and a reflective water feature.
- *
- * Reusable and self-contained district mesh hierarchy.
  */
 export function ArrivalPlaza() {
   const waterRef = useRef<THREE.Mesh>(null);
@@ -21,31 +129,38 @@ export function ArrivalPlaza() {
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
 
-    // Water surface animation (slow breathing/rippling)
+    // 1. Water ripple simulation
     if (waterRef.current) {
-      const material = waterRef.current.material as THREE.MeshStandardMaterial;
-      material.roughness = 0.1 + Math.sin(elapsed * 0.5) * 0.05;
-      waterRef.current.position.y = -0.15 + Math.sin(elapsed * 1.5) * 0.005;
+      const mat = waterRef.current.material as THREE.MeshStandardMaterial;
+      mat.roughness = 0.15 + Math.sin(elapsed * 1.5) * 0.05;
     }
 
-    // Sway foliage gently in the wind
+    // 2. Gentle wind swaying of foliage
     if (foliageRef.current) {
       foliageRef.current.children.forEach((child, index) => {
-        child.rotation.z = Math.sin(elapsed * 1.2 + index) * 0.02;
-        child.rotation.x = Math.cos(elapsed * 0.8 + index) * 0.01;
+        if (child instanceof THREE.Group) {
+          const leafCrown = child.children[1];
+          if (leafCrown) {
+            const speed = 0.5 + index * 0.1;
+            const amp = 0.02 + index * 0.005;
+            leafCrown.position.x = Math.sin(elapsed * speed) * amp;
+            leafCrown.position.z = Math.cos(elapsed * speed * 0.8) * amp;
+          }
+        }
       });
     }
   });
 
   return (
-    <group name="arrival-plaza-district">
-      {/* ────────────────────── Terrain & Slabs ────────────────────── */}
-      {/* Central circular concrete courtyard (Brutalist foundation) */}
+    <group name="arrival-plaza-root">
+      {/* ────────────────────── Hardscape Foundations ────────────────────── */}
+      {/* Main Concrete Plaza Floor Slab */}
       <mesh
         name="plaza-floor"
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.2, 0]}
         receiveShadow
+        castShadow
       >
         <ringGeometry args={[0, 12, 64]} />
         <meshStandardMaterial color="#5a5a65" roughness={0.7} metalness={0.1} />
@@ -108,33 +223,27 @@ export function ArrivalPlaza() {
         </mesh>
       </group>
 
-      {/* ────────────────────── Water Feature (Reflecting Pool) ────────────────────── */}
-      <group name="reflecting-pool">
-        {/* Pool frame border */}
-        <mesh position={[4, -0.15, -4]} receiveShadow castShadow>
-          <boxGeometry args={[4.4, 0.15, 6.4]} />
-          <meshStandardMaterial color="#2d2e33" roughness={0.8} />
+      {/* ────────────────────── Water Features ────────────────────── */}
+      {/* Rectangular reflecting pool along the western boundary */}
+      <group name="reflecting-pool" position={[-8, -0.19, 2]}>
+        {/* Pool Border */}
+        <mesh receiveShadow castShadow>
+          <boxGeometry args={[4.2, 0.1, 8.2]} />
+          <meshStandardMaterial color="#2b2b35" roughness={0.7} />
         </mesh>
-        {/* Water Surface plane */}
-        <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[4, -0.15, -4]}>
-          <planeGeometry args={[4.2, 6.2]} />
-          <meshStandardMaterial
-            color="#0b1a20"
-            roughness={0.15}
-            metalness={0.9}
-            transparent
-            opacity={0.85}
-          />
+        {/* Water Surface */}
+        <mesh ref={waterRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} receiveShadow>
+          <planeGeometry args={[4, 8]} />
+          <meshStandardMaterial color="#1a252c" roughness={0.15} metalness={0.9} />
         </mesh>
       </group>
 
-      {/* ────────────────────── Biophilic Foliage & Trees ────────────────────── */}
-      {/* Procedural stylized trees */}
-      <group name="trees" ref={foliageRef}>
+      {/* ────────────────────── Stylized Flora / Trees ────────────────────── */}
+      <group ref={foliageRef} name="plaza-foliage">
         {/* Tree 1: Zen Pine structure left */}
         <group position={[-7, 0, -6]}>
           <mesh castShadow receiveShadow position={[0, 1.5, 0]}>
-            <cylinderGeometry args={[0.12, 0.18, 3, 8]} />
+            <cylinderGeometry args={[0.1, 0.16, 3, 8]} />
             <meshStandardMaterial color="#2b1b17" roughness={0.8} />
           </mesh>
           <mesh castShadow position={[0, 3.2, 0]}>
@@ -172,6 +281,9 @@ export function ArrivalPlaza() {
           <meshStandardMaterial color="#556644" roughness={0.8} />
         </mesh>
       </group>
+
+      {/* Interaction Redesign Clickable Workshop Node */}
+      <WorkshopPedestal />
     </group>
   );
 }

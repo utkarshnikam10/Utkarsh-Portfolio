@@ -5,7 +5,6 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { CharacterController } from "./CharacterController";
 import { createMockGuideModel, MockGuideModel } from "./MockGuideModel";
-import { useStore } from "@/store/useStore";
 
 /**
  * PROJECT NEXUS // CHARACTER SYSTEM MANAGER
@@ -32,14 +31,12 @@ export function CharacterManager() {
     };
   }, [model]);
 
-  const scrollProgress = useStore((state) => state.scrollProgress);
-
   /**
    * Per-frame character system tick.
    * Updates FSM logic, animation mixes, and procedural look-at.
    */
   useFrame((_state, delta) => {
-    CharacterController.getInstance().update(delta, scrollProgress);
+    CharacterController.getInstance().update(delta);
   });
 
   return (

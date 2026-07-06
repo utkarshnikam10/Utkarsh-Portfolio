@@ -350,6 +350,63 @@ class AudioEngineImpl {
   }
 
   /**
+   * Play a brief, premium procedural hover blip (580Hz) decaying quickly.
+   */
+  public playHoverTone(): void {
+    if (!this.context || !this.isInitialized) return;
+
+    // Create oscillator and gain node
+    const osc = this.context.createOscillator();
+    const gainNode = this.context.createGain();
+
+    osc.type = "triangle"; // softer harmonic tone than pure sine
+    osc.frequency.setValueAtTime(580, this.context.currentTime);
+
+    // Short decay envelope
+    gainNode.gain.setValueAtTime(0.02, this.context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.08);
+
+    osc.connect(gainNode);
+    const sfxGain = this.getLayerGain("ui") || this.masterGain;
+    if (sfxGain) {
+      gainNode.connect(sfxGain);
+    } else {
+      gainNode.connect(this.context.destination);
+    }
+
+    osc.start();
+    osc.stop(this.context.currentTime + 0.09);
+  }
+
+  /**
+   * Play a deeper procedural click tone (380Hz) decaying over 0.15s.
+   */
+  public playClickTone(): void {
+    if (!this.context || !this.isInitialized) return;
+
+    const osc = this.context.createOscillator();
+    const gainNode = this.context.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(380, this.context.currentTime);
+
+    // Warm, resonant decay
+    gainNode.gain.setValueAtTime(0.08, this.context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.15);
+
+    osc.connect(gainNode);
+    const sfxGain = this.getLayerGain("ui") || this.masterGain;
+    if (sfxGain) {
+      gainNode.connect(sfxGain);
+    } else {
+      gainNode.connect(this.context.destination);
+    }
+
+    osc.start();
+    osc.stop(this.context.currentTime + 0.16);
+  }
+
+  /**
    * Teardown the audio engine. Closes the AudioContext and clears all layers.
    */
   public destroy(): void {
