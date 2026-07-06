@@ -20,6 +20,9 @@ export type GuideState = "idle" | "walking" | "projecting-notebook";
 
 export type CameraMode = "intro" | "guided" | "focus" | "free";
 
+export type ActiveScene =
+  "opening" | "about" | "journey" | "projects" | "skills" | "process" | "vision" | "contact";
+
 interface StoreState {
   // ──────────────────── Navigation ────────────────────
   /** Active narrative district */
@@ -70,9 +73,24 @@ interface StoreState {
   climaxAligned: boolean;
   setClimaxActive: (active: boolean) => void;
   setClimaxAligned: (aligned: boolean) => void;
+
+  // ──────────────────── Scroll-Motion ────────────────────
+  /** Current scroll progress (0 to 1) */
+  scrollProgress: number;
+  setScrollProgress: (progress: number) => void;
+
+  /** Active narrative scene */
+  activeScene: ActiveScene;
+  setActiveScene: (scene: ActiveScene) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
+  // Scroll-Motion
+  scrollProgress: 0,
+  setScrollProgress: (progress) => set({ scrollProgress: progress }),
+  activeScene: "opening",
+  setActiveScene: (scene) => set({ activeScene: scene }),
+
   // Navigation
   activeDistrict: "well-vault",
   setActiveDistrict: (district) => set({ activeDistrict: district }),

@@ -4,45 +4,35 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import { useStore } from "@/store/useStore";
-import { CameraStateMachine, CameraStateConfig } from "@/camera/CameraState";
-import { CameraSplinePlayer } from "@/camera/CameraSpline";
-import { CharacterController } from "@/character/CharacterController";
-import { EventBus } from "@/core/EventBus";
 
 /**
- * PROJECT NEXUS // CAMERA ENGINE
- * Responsibility: Governs camera movements across the structural districts using a
- * state-based architecture with spline path support for cinematic sequences.
- * Implements an "invisible filmmaker" camera look and feel: calm, smooth, respectful,
- * with no sudden orbits or unnecessary motion.
- *
- * Camera States:
- *   - Intro:   Cinematic locked path (spline-driven)
- *   - Guided:  Tracks the Guide Character along district cinematic rails
- *   - Focus:   Snaps to an interactive node for portfolio inspection
- *   - Free:    User orbit control for detailed viewing
+ * Camera spline keyframes driven by Lenis Scroll Progress.
+ * Structure: { progress, position, lookAt }
+ */
+const CAM_KEYFRAMES = [
+  { progress: 0.0, pos: [2.4, 1.6, 5.8], look: [-1.2, 1.25, -2.5] }, // Opening Scene
+  { progress: 0.125, pos: [2.4, 1.6, 5.8], look: [-1.2, 1.25, -2.5] }, // Start of About
+  { progress: 0.25, pos: [1.8, 1.6, 5.2], look: [-0.8, 1.15, -2.0] }, // Journey Node
+  { progress: 0.375, pos: [0.0, 1.8, 1.8], look: [0.0, 1.25, -2.0] }, // Projects Node
+  { progress: 0.5, pos: [-1.8, 1.5, 1.4], look: [2.2, 1.2, -1.0] }, // Skills Node
+  { progress: 0.625, pos: [0.0, 4.0, 2.5], look: [0.0, 1.0, -1.5] }, // Process Node
+  { progress: 0.75, pos: [0.0, 2.2, 6.5], look: [0.0, 1.2, 0.0] }, // Vision Node
+  { progress: 0.875, pos: [0.5, 2.0, 8.5], look: [0.0, 1.8, -12.0] }, // Tree/Monolith Reveal
+  { progress: 1.0, pos: [0.0, 1.4, 3.2], look: [0.0, 1.4, 0.0] }, // Contact Monolith
+];
+
+/**
+ * PROJECT NEXUS // CAMERA ENGINE (SCROLL DRIVEN)
+ * Responsibility: Governs camera movements by interpolating along keyframes
+ * mapped to Lenis scroll progress. Adds natural handheld breathing.
  */
 export function CameraManager() {
+  const scrollProgress = useStore((state) => state.scrollProgress);
   const activeDistrict = useStore((state) => state.activeDistrict);
-  const pendingStateRef = useRef<CameraStateConfig | null>(CameraStateMachine.getState());
 
   // Refs to cache lookAt and position targets for smooth interpolation
-  const interpolatedLookAt = useRef<THREE.Vector3>(new THREE.Vector3(0, 1.5, 0));
+  const currentCameraLookAt = useRef<THREE.Vector3>(new THREE.Vector3(0, 1.5, 0));
   const isFirstFrame = useRef(true);
-
-  /**
-   * Subscribe to camera state change events from the EventBus.
-   */
-  useEffect(() => {
-    const handleStateChange = () => {
-      pendingStateRef.current = CameraStateMachine.getState();
-    };
-    EventBus.on("camera:state:change", handleStateChange);
-
-    return () => {
-      EventBus.off("camera:state:change", handleStateChange);
-    };
-  }, []);
 
   useEffect(() => {
     void activeDistrict;
@@ -50,103 +40,74 @@ export function CameraManager() {
 
   /**
    * Per-frame camera update loop.
-   * Priority: Spline playback > Guided/State machine follow
+   * Interpolates position/target based on scrollProgress from Zustand.
    */
   useFrame((rootState, delta) => {
     const cam = rootState.camera;
-
-    if (isFirstFrame.current) {
-      isFirstFrame.current = false;
-      // Setup initial camera position
-      cam.position.set(0, 2.2, 7);
-      cam.lookAt(new THREE.Vector3(0, 1.5, 0));
-    }
-
-    // Priority 1: Spline-driven camera (cinematic sequences)
-    const splineResult = CameraSplinePlayer.update(delta);
-    if (splineResult) {
-      cam.position.copy(splineResult.position);
-      if (splineResult.lookAt) {
-        cam.lookAt(splineResult.lookAt);
-      }
-      if (splineResult.fov !== null && cam instanceof THREE.PerspectiveCamera) {
-        cam.fov = splineResult.fov;
-        cam.updateProjectionMatrix();
-      }
-      return; // Spline takes full control
-    }
-
-    const stateConfig = CameraStateMachine.getState();
-
     const elapsed = rootState.clock.getElapsedTime();
 
-    // Subtle handheld-style breathing (noise / sines)
-    const swayX = Math.sin(elapsed * 0.45) * 0.05;
-    const swayY = Math.cos(elapsed * 0.35) * 0.035;
-    const swayZ = Math.sin(elapsed * 0.25) * 0.04;
-
-    const swayLookX = Math.sin(elapsed * 0.35) * 0.02;
-    const swayLookY = Math.cos(elapsed * 0.4) * 0.015;
-
-    // Priority 2: Guided Follow (Invisible Filmmaker)
-    if (stateConfig.followsGuide) {
-      const charController = CharacterController.getInstance();
-      const charPos = charController.getCharacterPosition();
-      const followPoint = charController.getCameraFollowPoint();
-
-      // Smoothly interpolate the lookAt target (neck height)
-      interpolatedLookAt.current.lerp(followPoint, 1.8 * delta);
-
-      // Filmmaker framing: Place camera slightly behind and to the side of the character
-      // Keep a calm, slow tracking movement
-      const targetCamPos = new THREE.Vector3();
-      targetCamPos.copy(charPos);
-      targetCamPos.y += 1.8 + swayY; // Height offset + breathing
-      targetCamPos.z += 5.5 + swayZ; // Distance behind + breathing
-      targetCamPos.x += 1.2 + swayX; // Over-the-shoulder offset + breathing
-
-      const lookTarget = interpolatedLookAt.current.clone();
-      lookTarget.x += swayLookX;
-      lookTarget.y += swayLookY;
-
-      cam.position.lerp(targetCamPos, 1.2 * delta); // Slow cinematic ease
-      cam.lookAt(lookTarget);
-      return;
-    }
-
-    // Priority 3: Intro Cinematic Mode (Eye level, Guide on left-third, Tree in distance)
-    if (stateConfig.id === "intro") {
-      const charController = CharacterController.getInstance();
-      const charPos = charController.getCharacterPosition();
-
-      // Eye-level camera, offset to the right, looking slightly left
-      // Placing the Guide (at [0, 0, 0]) in the left third, with the path heading
-      // to the Tree location (towards Z < 0) visible on the right.
-      const introCamPos = new THREE.Vector3(2.4 + swayX, 1.6 + swayY, 5.8 + swayZ);
-      const introLookTarget = new THREE.Vector3(
-        charPos.x - 1.2 + swayLookX,
-        1.2 + swayLookY,
-        charPos.z - 2.5
+    // 1. First-frame fallback initialization
+    if (isFirstFrame.current) {
+      isFirstFrame.current = false;
+      const initialFrame = CAM_KEYFRAMES[0];
+      cam.position.set(initialFrame.pos[0], initialFrame.pos[1], initialFrame.pos[2]);
+      currentCameraLookAt.current.set(
+        initialFrame.look[0],
+        initialFrame.look[1],
+        initialFrame.look[2]
       );
-
-      cam.position.lerp(introCamPos, 1.0 * delta); // Slow ease in
-      cam.lookAt(introLookTarget);
-      return;
+      cam.lookAt(currentCameraLookAt.current);
     }
 
-    // Priority 4: Standard State Machine / Fallback Config
-    const pending = pendingStateRef.current;
-    if (pending) {
-      if (cam instanceof THREE.PerspectiveCamera) {
-        cam.fov = pending.fov;
-        cam.updateProjectionMatrix();
+    // 2. Continuous Subtle Handheld Camera Sway (Cinematic breathing)
+    const swayX = Math.sin(elapsed * 0.45) * 0.04;
+    const swayY = Math.cos(elapsed * 0.35) * 0.03;
+    const swayZ = Math.sin(elapsed * 0.25) * 0.035;
+
+    const swayLookX = Math.sin(elapsed * 0.35) * 0.015;
+    const swayLookY = Math.cos(elapsed * 0.4) * 0.012;
+
+    // 3. Find keyframes bracketing the current scroll progress
+    let idx = 0;
+    for (let i = 0; i < CAM_KEYFRAMES.length - 1; i++) {
+      if (
+        scrollProgress >= CAM_KEYFRAMES[i].progress &&
+        scrollProgress <= CAM_KEYFRAMES[i + 1].progress
+      ) {
+        idx = i;
+        break;
       }
-      // Smooth position transitions
-      const targetPos = new THREE.Vector3(0, 1.8, pending.distance);
-      cam.position.lerp(targetPos, 2.0 * delta);
-      cam.lookAt(new THREE.Vector3(0, 1.5, 0));
-      pendingStateRef.current = null;
     }
+    const k1 = CAM_KEYFRAMES[idx];
+    const k2 = CAM_KEYFRAMES[idx + 1];
+
+    // Compute interpolation weight
+    const range = k2.progress - k1.progress;
+    const factor = range > 0 ? (scrollProgress - k1.progress) / range : 0;
+
+    // Apply smooth cubic Hermite easing to the interpolation factor
+    const smoothedFactor = factor * factor * (3.0 - 2.0 * factor);
+
+    // 4. Interpolate position and look targets
+    const targetPos = new THREE.Vector3()
+      .fromArray(k1.pos)
+      .lerp(new THREE.Vector3().fromArray(k2.pos), smoothedFactor);
+    const targetLook = new THREE.Vector3()
+      .fromArray(k1.look)
+      .lerp(new THREE.Vector3().fromArray(k2.look), smoothedFactor);
+
+    // Apply sways
+    targetPos.x += swayX;
+    targetPos.y += swayY;
+    targetPos.z += swayZ;
+
+    targetLook.x += swayLookX;
+    targetLook.y += swayLookY;
+
+    // 5. Smoothly ease to the target positions to eliminate scroll stutter
+    cam.position.lerp(targetPos, 2.5 * delta);
+    currentCameraLookAt.current.lerp(targetLook, 2.5 * delta);
+    cam.lookAt(currentCameraLookAt.current);
   });
 
   return null;

@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full w-full">
-      <body className="h-full w-full antialiased font-[family-name:var(--font-inter)]">
+      <body className="min-h-screen w-screen antialiased font-[family-name:var(--font-inter)] bg-[#0a0a0f]">
         <Providers>{children}</Providers>
       </body>
     </html>

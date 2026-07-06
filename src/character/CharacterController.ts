@@ -251,10 +251,13 @@ export class CharacterController implements CharacterAnimationController {
   /**
    * Character frame tick. Updates animation mixer, FSM, and head lookAt.
    */
-  public update(delta: number): void {
+  public update(delta: number, scrollProgress = 0): void {
     if (!this.initialSetupDone || !this.model) return;
 
     this.accumulatedTime += delta;
+
+    // Sync position and FSM state to scroll progress
+    this.syncLocomotionToScroll(scrollProgress);
 
     // Tick FSM state machine logic
     this.fsm.update(delta);
@@ -267,6 +270,62 @@ export class CharacterController implements CharacterAnimationController {
 
     // Dynamic head rotation on top of bone tracks
     this.updateHeadTracking(delta);
+  }
+
+  /**
+   * Sync character position and animation states dynamically to scroll progress.
+   */
+  private syncLocomotionToScroll(scrollProgress: number): void {
+    if (!this.model) return;
+
+    const currentPos = this.position.clone();
+    const activeStateName = this.fsm.getActiveState()?.name.toLowerCase() || "";
+
+    if (scrollProgress < 0.05) {
+      // 1. Initial Reading Phase
+      currentPos.set(0, 0, 0);
+      this.setCharacterPosition(currentPos);
+
+      // Let FSM dictate reading state
+      if (scrollProgress < 0.02) {
+        if (activeStateName !== "reading" && activeStateName !== "pageturn") {
+          this.transitionTo("reading");
+        }
+      }
+    } else if (scrollProgress >= 0.05 && scrollProgress < 0.2) {
+      // 2. Awakening & Attention Phase
+      currentPos.set(0, 0, 0);
+      this.setCharacterPosition(currentPos);
+
+      // Transition FSM to smile/look up
+      if (
+        activeStateName !== "lookingup" &&
+        activeStateName !== "closenotebook" &&
+        activeStateName !== "smile"
+      ) {
+        this.transitionTo("lookingup");
+      }
+    } else if (scrollProgress >= 0.2 && scrollProgress < 0.45) {
+      // 3. Locomotion / Walking Phase (tied directly to scroll progress)
+      const walkProgress = (scrollProgress - 0.2) / 0.25; // normalized 0 to 1
+
+      // Guide walks along negative Z from Z = 0 to Z = -15
+      currentPos.set(0, 0, -walkProgress * 15.0);
+      this.setCharacterPosition(currentPos);
+
+      // Force walk FSM state so walking loop runs
+      if (activeStateName !== "walk") {
+        this.transitionTo("walk");
+      }
+    } else {
+      // 4. Idle / End Phase
+      currentPos.set(0, 0, -15.0);
+      this.setCharacterPosition(currentPos);
+
+      if (activeStateName !== "idle" && activeStateName !== "wait") {
+        this.transitionTo("idle");
+      }
+    }
   }
 
   /**

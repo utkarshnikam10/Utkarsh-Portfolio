@@ -1,5 +1,6 @@
 import React from "react";
 import CanvasContainer from "@/components/canvas/CanvasContainer";
+import ScrollContainer from "@/components/dom/ScrollContainer";
 
 /**
  * PROJECT NEXUS // MAIN PAGE ENTRY
@@ -12,8 +13,14 @@ import CanvasContainer from "@/components/canvas/CanvasContainer";
  */
 export default function Home() {
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-[#0a0a0a]">
-      <CanvasContainer />
+    <main className="relative min-h-screen w-screen bg-[#0a0a0f] overflow-x-hidden">
+      {/* 3D WebGL Canvas Layer (Fixed background) */}
+      <div className="fixed inset-0 z-0 h-screen w-screen pointer-events-none">
+        <CanvasContainer />
+      </div>
+
+      {/* DOM Smooth Scrolling Layer */}
+      <ScrollContainer />
     </main>
   );
 }
