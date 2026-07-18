@@ -64,43 +64,74 @@ export default function Shivling() {
       {/* Stone Pedestal Base */}
       <mesh castShadow receiveShadow position={[0, -0.6, 0]}>
         <cylinderGeometry args={[1.5, 1.6, 0.15, 32]} />
-        <meshStandardMaterial color="#110d0a" roughness={0.9} metalness={0.2} />
+        <meshStandardMaterial
+          color="#221b16"
+          roughness={0.4}
+          metalness={0.5}
+          emissive="#d4af37"
+          emissiveIntensity={0.08}
+        />
       </mesh>
 
       {/* Yoni Base (The circular ring) */}
       <group position={[0, -0.4, 0]}>
         <mesh castShadow receiveShadow>
           <cylinderGeometry args={[1.2, 1.3, 0.25, 32]} />
-          <meshStandardMaterial color="#1a1410" roughness={0.8} metalness={0.3} />
+          <meshStandardMaterial
+            color="#2a201a"
+            roughness={0.35}
+            metalness={0.6}
+            emissive="#d4af37"
+            emissiveIntensity={0.1}
+          />
         </mesh>
 
         {/* Yoni Spout (The projecting channel) */}
         <mesh castShadow receiveShadow position={[1.0, 0, 0]} rotation={[0, 0, 0]}>
           <boxGeometry args={[0.8, 0.25, 0.5]} />
-          <meshStandardMaterial color="#1a1410" roughness={0.8} metalness={0.3} />
+          <meshStandardMaterial
+            color="#2a201a"
+            roughness={0.35}
+            metalness={0.6}
+            emissive="#d4af37"
+            emissiveIntensity={0.1}
+          />
         </mesh>
       </group>
 
       {/* The Central Linga Stone */}
       <mesh ref={lingaRef} castShadow receiveShadow position={[0, 0, 0]}>
         <cylinderGeometry args={[0.35, 0.35, 0.8, 32, 1, false]} />
-        <meshStandardMaterial color="#16110d" roughness={0.6} metalness={0.4} bumpScale={0.05} />
+        <meshStandardMaterial
+          color="#2c221a"
+          roughness={0.3}
+          metalness={0.7}
+          emissive="#d4af37"
+          emissiveIntensity={0.12}
+        />
       </mesh>
 
       {/* Rounded top of the Linga */}
       <mesh position={[0, 0.4, 0]} castShadow>
         <sphereGeometry args={[0.35, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color="#16110d" roughness={0.6} metalness={0.4} />
+        <meshStandardMaterial
+          color="#2c221a"
+          roughness={0.3}
+          metalness={0.7}
+          emissive="#d4af37"
+          emissiveIntensity={0.12}
+        />
       </mesh>
 
       {/* Royal Gold Ring (Engraving around the Linga) */}
       <mesh position={[0, 0.1, 0]}>
         <torusGeometry args={[0.36, 0.02, 8, 32]} />
         <meshStandardMaterial
-          color="#d4af37"
-          emissive="#d4af37"
-          emissiveIntensity={0.3}
-          roughness={0.2}
+          color="#f3c623"
+          emissive="#f3c623"
+          emissiveIntensity={1.5}
+          roughness={0.1}
+          metalness={0.9}
         />
       </mesh>
 
@@ -109,22 +140,40 @@ export default function Shivling() {
         {/* Top ash line */}
         <mesh position={[0, 0.05, 0]}>
           <boxGeometry args={[0.2, 0.01, 0.01]} />
-          <meshStandardMaterial color="#d4af37" emissive="#d4af37" emissiveIntensity={0.4} />
+          <meshStandardMaterial
+            color="#f3c623"
+            emissive="#f3c623"
+            emissiveIntensity={1.8}
+            roughness={0.1}
+            metalness={0.9}
+          />
         </mesh>
         {/* Middle ash line */}
         <mesh position={[0, 0.02, 0]}>
           <boxGeometry args={[0.24, 0.01, 0.01]} />
-          <meshStandardMaterial color="#d4af37" emissive="#d4af37" emissiveIntensity={0.4} />
+          <meshStandardMaterial
+            color="#f3c623"
+            emissive="#f3c623"
+            emissiveIntensity={1.8}
+            roughness={0.1}
+            metalness={0.9}
+          />
         </mesh>
         {/* Bottom ash line */}
         <mesh position={[0, -0.01, 0]}>
           <boxGeometry args={[0.2, 0.01, 0.01]} />
-          <meshStandardMaterial color="#d4af37" emissive="#d4af37" emissiveIntensity={0.4} />
+          <meshStandardMaterial
+            color="#f3c623"
+            emissive="#f3c623"
+            emissiveIntensity={1.8}
+            roughness={0.1}
+            metalness={0.9}
+          />
         </mesh>
         {/* Red Tilak Bindi in center */}
         <mesh position={[0, 0.02, 0.01]}>
           <sphereGeometry args={[0.015, 8, 8]} />
-          <meshStandardMaterial color="#800020" emissive="#800020" emissiveIntensity={0.2} />
+          <meshStandardMaterial color="#ff0033" emissive="#ff0033" emissiveIntensity={1.5} />
         </mesh>
       </group>
 
@@ -174,7 +223,9 @@ function WaterDrop({
     <mesh ref={ref} position={[x, startY, z]}>
       <sphereGeometry args={[0.015, 8, 8]} />
       <meshStandardMaterial
-        color="#faf6f0"
+        color="#f3c623"
+        emissive="#d4af37"
+        emissiveIntensity={0.8}
         transparent
         opacity={0.8}
         roughness={0.1}

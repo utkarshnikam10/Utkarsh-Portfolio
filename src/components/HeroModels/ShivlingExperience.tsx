@@ -82,24 +82,24 @@ export default function ShivlingExperience() {
     >
       <Suspense fallback={null}>
         {/* Cinematic Ambient Light (Warm stone tint) */}
-        <ambientLight intensity={0.15} color="#1c1410" />
+        <ambientLight intensity={0.35} color="#2c201a" />
 
         {/* Volumetric sunbeam shaft shining down on the Shivling */}
         <spotLight
           position={[2, 6, 2]}
-          angle={0.4}
+          angle={0.45}
           penumbra={0.8}
-          intensity={3.5}
+          intensity={6.5}
           color="#faf6f0"
           castShadow
           shadow-mapSize={[1024, 1024]}
         />
 
         {/* Crimson backlighting to represent battle heat/power */}
-        <pointLight position={[-4, -1, -3]} intensity={1.5} color="#800020" />
+        <pointLight position={[-4, -1, -3]} intensity={3.0} color="#800020" />
 
         {/* Golden side highlights */}
-        <pointLight position={[3, 1, 2]} intensity={2.0} color="#d4af37" />
+        <pointLight position={[3, 1, 2]} intensity={4.5} color="#d4af37" />
 
         {/* 3D Shivling with float animation */}
         <Float speed={0.8} rotationIntensity={0.02} floatIntensity={0.05}>
