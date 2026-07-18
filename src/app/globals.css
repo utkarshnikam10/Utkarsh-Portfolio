@@ -10,22 +10,22 @@
    ═══════════════════════════════════════════════════════════ */
 
 @theme {
-  --color-background: #0a0806;
-  --color-background-light: #120f0c;
-  --color-surface: #191410;
-  --color-surface-light: #28211a;
-  --color-primary: #d4af37;
-  --color-primary-hover: #f3c623;
-  --color-primary-dim: rgba(212, 175, 55, 0.1);
-  --color-accent-crimson: #800020;
-  --color-accent-crimson-hover: #a00028;
-  --color-text: #faf6f0;
-  --color-text-secondary: #dcd7ce;
-  --color-text-tertiary: #a69f92;
-  --color-border: #28211a;
-  --color-border-light: #44372b;
-  --color-error: #ffb4ab;
-  --color-success: #34d399;
+  --color-background: var(--background);
+  --color-background-light: var(--background-light);
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-dim: var(--primary-dim);
+  --color-accent-crimson: var(--accent-crimson);
+  --color-accent-crimson-hover: var(--accent-crimson-hover);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-error: var(--error);
+  --color-success: var(--success);
 
   --font-serif: "Cinzel", "Playfair Display", Georgia, serif;
   --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -41,6 +41,48 @@
   --duration-md: 400ms;
   --duration-lg: 600ms;
   --duration-xl: 800ms;
+
+  /* Minimalist Light Palette */
+  --background: #f9f8f6;
+  --background-light: #f2f0ea;
+  --surface: #ffffff;
+  --surface-light: #eae6dc;
+  --primary: #94713c;
+  --primary-hover: #735324;
+  --primary-dim: rgba(148, 113, 60, 0.08);
+  --accent-crimson: #7c746c;
+  --accent-crimson-hover: #605952;
+  --text: #181715;
+  --text-secondary: #4e4b47;
+  --text-tertiary: #8c8780;
+  --border: #e4e0d5;
+  --border-light: #c9c2b3;
+  --error: #ba1a1a;
+  --success: #00684a;
+
+  --bg-image: radial-gradient(rgba(148, 113, 60, 0.04) 1px, transparent 1px);
+}
+
+.dark {
+  /* Minimalist Dark Palette */
+  --background: #0b0a09;
+  --background-light: #141311;
+  --surface: #1a1917;
+  --surface-light: #282623;
+  --primary: #dfc59f;
+  --primary-hover: #ebd9bf;
+  --primary-dim: rgba(223, 197, 159, 0.08);
+  --accent-crimson: #8e867c;
+  --accent-crimson-hover: #a39b91;
+  --text: #f7f6f4;
+  --text-secondary: #d1cdc5;
+  --text-tertiary: #948f87;
+  --border: #282623;
+  --border-light: #44413c;
+  --error: #ffb4ab;
+  --success: #34d399;
+
+  --bg-image: radial-gradient(rgba(223, 197, 159, 0.04) 1px, transparent 1px);
 }
 
 html {
@@ -57,19 +99,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100vw;
-  /* Stone Carving Texture Effect */
-  background-image:
-    radial-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px),
-    radial-gradient(rgba(0, 0, 0, 0.8) 50%, transparent 100%);
-  background-size:
-    32px 32px,
-    100% 100%;
+  background-image: var(--bg-image);
+  background-size: 32px 32px;
 }
 
 /* ─── Selection ─── */
 ::selection {
-  background-color: rgba(212, 175, 55, 0.3);
-  color: #ffffff;
+  background-color: var(--color-primary-dim);
+  color: var(--color-text);
 }
 
 /* ─── Canvas ─── */
@@ -84,14 +121,14 @@ canvas {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0806;
+  background: var(--color-background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #28211a;
-  border: 2px solid #0a0806;
+  background: var(--color-border);
+  border: 2px solid var(--color-background);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #d4af37;
+  background: var(--color-primary);
 }
 
 /* ═══════════════════════════════════════════════════════════
