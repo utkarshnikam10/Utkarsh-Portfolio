@@ -111,7 +111,7 @@ export default function BattleDashboard() {
           </div>
 
           {/* Center Column: Live Tactical Telemetry Dials */}
-          <div className="glass rounded-lg p-8 border border-border flex flex-col gap-6 opacity-0">
+          <div className="glass gold-corners rounded-lg p-8 border border-border flex flex-col gap-6 opacity-0">
             <h3 className="text-text-tertiary text-[10px] tracking-widest uppercase font-mono">
               Performance Telemetry:
             </h3>
@@ -175,7 +175,7 @@ export default function BattleDashboard() {
           </div>
 
           {/* Right Column: Strategy Report Generator */}
-          <div className="bg-[#0c0a08] border border-border p-8 rounded-lg font-mono text-xs leading-relaxed flex flex-col justify-between min-h-[350px] shadow-lg opacity-0">
+          <div className="bg-[#0c0a08] gold-corners border border-border p-8 rounded-lg font-mono text-xs leading-relaxed flex flex-col justify-between min-h-[350px] shadow-lg opacity-0">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2 border-b border-border pb-3">
                 <span className="text-primary">❖</span>

@@ -142,6 +142,9 @@ export default function Hero() {
       {/* Background shadow layer */}
       <div className="absolute inset-0 bg-[#0a0806]/85 z-0" />
 
+      {/* Modern cybernetic-grid coordinate mesh */}
+      <div className="hero-grid-overlay" />
+
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left Side: Cinematic Typography */}
         <div className="flex flex-col gap-6">

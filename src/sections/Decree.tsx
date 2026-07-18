@@ -71,7 +71,7 @@ export default function Decree() {
 
         <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8 items-start">
           {/* Left Column: Form Scroll */}
-          <div className="glass rounded p-8 border border-border opacity-0">
+          <div className="glass gold-corners rounded p-8 border border-border opacity-0">
             <h3 className="font-serif text-lg font-bold text-gradient mb-6 uppercase">
               Submit a Royal Petition
             </h3>
@@ -160,7 +160,7 @@ export default function Decree() {
 
           {/* Right Column: Royal Stamp and Law specifications */}
           <div className="flex flex-col gap-8 opacity-0">
-            <div className="glass rounded p-8 border border-border">
+            <div className="glass gold-corners rounded p-8 border border-border">
               <h3 className="font-serif text-lg font-bold text-text mb-4 uppercase">
                 The Sovereign Laws
               </h3>

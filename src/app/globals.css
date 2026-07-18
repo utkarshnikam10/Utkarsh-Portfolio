@@ -284,6 +284,29 @@ canvas {
     overflow: hidden;
   }
 
+  /* Sweep reflection shimmer */
+  .char-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(212, 175, 55, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    transition: 0.8s var(--bezier-smooth);
+    pointer-events: none;
+  }
+
+  .char-card:hover::before {
+    left: 125%;
+  }
+
   .char-card:hover {
     border-color: #d4af37;
     background: rgba(25, 20, 16, 0.95);
@@ -291,6 +314,52 @@ canvas {
     box-shadow:
       0 10px 40px rgba(0, 0, 0, 0.7),
       0 0 20px rgba(212, 175, 55, 0.15);
+  }
+
+  /* Gold corners filigree for panels */
+  .gold-corners {
+    position: relative;
+  }
+
+  .gold-corners::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid #d4af37;
+    border-left: 1px solid #d4af37;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .gold-corners::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    border-bottom: 1px solid #d4af37;
+    border-right: 1px solid #d4af37;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Grid mesh decoration for background sections */
+  .hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212, 175, 55, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212, 175, 55, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center center;
+    mask-image: radial-gradient(circle, black 35%, transparent 80%);
+    -webkit-mask-image: radial-gradient(circle, black 35%, transparent 80%);
+    pointer-events: none;
+    z-index: 1;
   }
 
   /* ─── Waterfall Timeline ─── */

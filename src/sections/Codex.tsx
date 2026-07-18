@@ -107,7 +107,7 @@ export default function Codex() {
           </div>
 
           {/* Right: Character Detailed Stats Panel */}
-          <div className="glass rounded-lg p-8 border border-border sticky top-28 min-h-[500px] flex flex-col justify-between">
+          <div className="glass gold-corners rounded-lg p-8 border border-border sticky top-28 min-h-[500px] flex flex-col justify-between">
             {selectedChar ? (
               <div className="flex flex-col gap-6">
                 <div>
