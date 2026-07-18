@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/sections/Hero";
-import Codex from "@/sections/Codex";
-import BattleDashboard from "@/sections/BattleDashboard";
-import Timeline from "@/sections/Timeline";
-import Decree from "@/sections/Decree";
+import About from "@/sections/Codex";
+import Skills from "@/sections/Skills";
+import Projects from "@/sections/BattleDashboard";
+import Experience from "@/sections/Timeline";
+import Achievements from "@/sections/Achievements";
+import Contact from "@/sections/Decree";
 import Footer from "@/sections/Footer";
 import CustomCursor from "@/components/CustomCursor";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -14,10 +16,8 @@ import { useStore } from "@/store/useStore";
 import gsap from "gsap";
 
 /**
- * Main Home Page
- * Composes all Mahishmati chapters into a single responsive vertical scrolling interface.
- * Implements a simple scroll spy system to update the active navbar section.
- * Mounts CustomCursor, LoadingScreen, and mouse-parallax background glows.
+ * NEXUS — Main Portfolio Page
+ * Composes all sections into a premium single-page scrolling experience.
  */
 export default function Home() {
   const { setActiveSection } = useStore();
@@ -25,10 +25,18 @@ export default function Home() {
 
   // Scroll spy section tracker
   useEffect(() => {
-    const sections = ["hero", "codex", "battle", "timeline", "decree"];
+    const sections = [
+      "hero",
+      "about",
+      "skills",
+      "projects",
+      "experience",
+      "achievements",
+      "contact",
+    ];
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 200; // Offset for headers
+      const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
         const el = document.getElementById(section);
@@ -46,12 +54,12 @@ export default function Home() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial call
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [setActiveSection]);
 
-  // Subtle background glow parallax movement
+  // Subtle background glow parallax
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -81,29 +89,26 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-background text-text overflow-hidden selection:bg-primary-dim selection:text-primary">
-      {/* Cinematic Custom Cursor Follower */}
       <CustomCursor />
 
-      {/* Intro loading animation */}
       {!loadingComplete && <LoadingScreen onComplete={() => setLoadingComplete(true)} />}
 
-      {/* Royal Volumetric Lighting Glows with Mouse Parallax classes */}
+      {/* Ambient Glow Layers */}
       <div className="bg-glow-1 pointer-events-none fixed -top-[40%] -left-[20%] w-[80%] aspect-square rounded-full bg-primary/5 blur-[150px] z-0" />
-      <div className="bg-glow-2 pointer-events-none fixed -bottom-[40%] -right-[20%] w-[80%] aspect-square rounded-full bg-accent-crimson/5 blur-[150px] z-0" />
+      <div className="bg-glow-2 pointer-events-none fixed -bottom-[40%] -right-[20%] w-[80%] aspect-square rounded-full bg-primary/3 blur-[150px] z-0" />
 
-      {/* Navigation */}
       <Navbar />
 
-      {/* Main Page Layout */}
       <main className="relative z-10">
         <Hero />
-        <Codex />
-        <BattleDashboard />
-        <Timeline />
-        <Decree />
+        <About />
+        <Skills />
+        <Projects />
+        <Experience />
+        <Achievements />
+        <Contact />
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

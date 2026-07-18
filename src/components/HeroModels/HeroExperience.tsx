@@ -4,30 +4,43 @@ import { Suspense, useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Float } from "@react-three/drei";
 import * as THREE from "three";
-import Room from "./Room";
+import AbstractShape from "./AbstractShape";
 
 /**
- * HeroExperience — R3F Canvas wrapping the Room model + floating particles + lighting
+ * CosmicDust — Clean drifting electric blue/silver particles
  */
-
-function Particles({ count = 80 }) {
+function CosmicDust({ count = 80 }) {
   const ref = useRef<THREE.Points>(null);
 
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      // Deterministic pseudo-random generation based on index i
-      pos[i * 3] = (Math.sin(i * 12.9898) * 43758.5453) % 4;
-      pos[i * 3 + 1] = (Math.sin(i * 78.233) * 43758.5453) % 3;
-      pos[i * 3 + 2] = (Math.sin(i * 45.123) * 43758.5453) % 4;
+      const pRand1 = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+      const pRand2 = Math.abs(Math.sin(i * 78.233) * 43758.5453) % 1;
+      const pRand3 = Math.abs(Math.sin(i * 45.123) * 43758.5453) % 1;
+
+      const radius = 1.0 + pRand1 * 3.0;
+      const angle = pRand2 * Math.PI * 2;
+      pos[i * 3] = Math.cos(angle) * radius;
+      pos[i * 3 + 1] = (pRand3 - 0.5) * 6;
+      pos[i * 3 + 2] = Math.sin(angle) * radius;
     }
     return pos;
   }, [count]);
 
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.y = state.clock.elapsedTime * 0.02;
-      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.05) * 0.1;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.04;
+      const positionsAttr = ref.current.geometry.attributes.position;
+      const array = positionsAttr.array as Float32Array;
+
+      for (let i = 0; i < count; i++) {
+        array[i * 3 + 1] += 0.004;
+        if (array[i * 3 + 1] > 3.0) {
+          array[i * 3 + 1] = -3.0;
+        }
+      }
+      positionsAttr.needsUpdate = true;
     }
   });
 
@@ -41,48 +54,64 @@ function Particles({ count = 80 }) {
           itemSize={3}
         />
       </bufferGeometry>
-      <pointsMaterial size={0.02} color="#007aff" transparent opacity={0.6} sizeAttenuation />
+      <pointsMaterial
+        size={0.04}
+        color="#0066ff" // Electric Blue dust
+        transparent
+        opacity={0.5}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+      />
     </points>
   );
 }
 
+/**
+ * HeroExperience — High-performance minimalist R3F Canvas wrapping the abstract sculpture
+ */
 export default function HeroExperience() {
   return (
     <Canvas
-      camera={{ position: [3, 1.5, 4], fov: 45 }}
+      camera={{ position: [0, 0, 4.5], fov: 45 }}
       className="!absolute inset-0"
       dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
     >
       <Suspense fallback={null}>
-        {/* Lighting */}
-        <ambientLight intensity={0.3} color="#8e9192" />
-        <directionalLight
-          position={[5, 5, 5]}
-          intensity={0.8}
-          color="#ffffff"
-          castShadow
-          shadow-mapSize={1024}
-        />
-        <pointLight position={[-3, 2, -2]} intensity={0.5} color="#007aff" />
-        <pointLight position={[2, -1, 3]} intensity={0.3} color="#1a8aff" />
+        {/* Soft Ambient Light for base visibility */}
+        <ambientLight intensity={0.4} color="#ffffff" />
 
-        {/* 3D Room Model */}
-        <Float speed={1} rotationIntensity={0.05} floatIntensity={0.1}>
-          <Room />
+        {/* High-intensity Electric Blue spotlights */}
+        <spotLight
+          position={[4, 5, 4]}
+          angle={0.4}
+          penumbra={1}
+          intensity={5}
+          color="#0066ff"
+          castShadow
+        />
+
+        {/* Soft fill light */}
+        <directionalLight position={[-4, -3, 2]} intensity={1.5} color="#ffffff" />
+
+        {/* Deep blue backlighting */}
+        <pointLight position={[0, -2, -3]} intensity={3} color="#001133" />
+
+        {/* Morphing abstract torus */}
+        <Float speed={1.2} rotationIntensity={0.05} floatIntensity={0.1}>
+          <AbstractShape />
         </Float>
 
-        {/* Floating particles */}
-        <Particles />
+        {/* Slow drifting dust */}
+        <CosmicDust />
 
-        {/* Orbit controls for desktop */}
+        {/* Interactive controls */}
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          maxPolarAngle={Math.PI / 2}
+          maxPolarAngle={Math.PI / 2 + 0.1}
           minPolarAngle={Math.PI / 4}
-          autoRotate={false}
         />
       </Suspense>
     </Canvas>

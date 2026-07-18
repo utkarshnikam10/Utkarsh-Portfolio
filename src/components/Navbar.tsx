@@ -79,7 +79,7 @@ export default function Navbar() {
             href="#hero"
             className="font-serif text-lg font-bold tracking-widest text-text hover:text-primary transition-colors uppercase no-underline"
           >
-            Mahishmati
+            NEXUS
           </a>
 
           {/* Desktop Nav */}

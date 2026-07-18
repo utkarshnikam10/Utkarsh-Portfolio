@@ -90,23 +90,23 @@ export default function Footer() {
   const backToTopRef = useMagneticHover(20, 0.4);
 
   return (
-    <footer className="border-t border-border bg-[#0a0806] pt-24 pb-12 px-6 relative overflow-hidden">
-      {/* Decorative top gold line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[85%] h-[0.5px] bg-[rgba(212,175,55,0.15)]" />
+    <footer className="border-t border-border bg-background pt-24 pb-12 px-6 relative overflow-hidden">
+      {/* Decorative top line */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[85%] h-[0.5px] bg-border/30" />
 
       <div className="max-w-7xl mx-auto flex flex-col gap-12">
         <div className="flex flex-col md:flex-row items-start justify-between gap-12">
           {/* Copyright & Core Identity */}
           <div className="flex flex-col gap-2">
             <span className="font-serif text-sm font-bold tracking-[0.1em] text-text uppercase">
-              Utkarsh Portfolio
+              NEXUS
             </span>
             <span className="text-text-tertiary text-xs leading-relaxed max-w-xs font-sans">
               Designing premium interactive user experiences and high-performance frontend
               architectures.
             </span>
             <span className="text-[10px] text-text-tertiary font-mono tracking-wider mt-4">
-              &copy; {currentYear} ALL SOVEREIGN RIGHTS RESERVED
+              &copy; {currentYear} UTKARSH. ALL RIGHTS RESERVED
             </span>
           </div>
 
@@ -165,10 +165,10 @@ export default function Footer() {
         {/* Massive Outlined Title Fold */}
         <div className="select-none pointer-events-none mt-8 text-center relative">
           <h2
-            className="font-serif text-[8vw] sm:text-[9vw] font-black uppercase tracking-[0.2em] leading-none opacity-[0.06] text-transparent"
-            style={{ WebkitTextStroke: "0.5px rgba(255,255,255,0.7)" }}
+            className="font-serif text-[8vw] sm:text-[9vw] font-black uppercase tracking-[0.2em] leading-none opacity-[0.04] text-transparent"
+            style={{ WebkitTextStroke: "0.5px currentColor" }}
           >
-            Mahishmati
+            NEXUS
           </h2>
         </div>
       </div>

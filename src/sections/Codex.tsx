@@ -1,42 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import SectionHeader from "@/components/SectionHeader";
-import { characters } from "@/constants";
+import { personalPhilosophy } from "@/constants";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { AudioSynth } from "@/utils/audio";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Codex — Chapter I: The Throne of Mahishmati
- * Displays interactive cards for each of the primary Baahubali characters.
- * Features 3D hover tilt effects, character stats bars, and quote reveals.
+ * About — Personal journey, philosophy, and goals
+ * Interactive scroll reveal with clean bento-style cards
  */
-
-export default function Codex() {
+export default function About() {
   const gridRef = useRef<HTMLDivElement>(null);
-  const [selectedChar, setSelectedChar] = useState<(typeof characters)[0] | null>(null);
 
-  // Staggered scroll reveal using GSAP ScrollTrigger
   useEffect(() => {
     const el = gridRef.current;
     if (!el) return;
 
-    const cards = el.querySelectorAll("[data-char-card]");
+    const cards = el.querySelectorAll("[data-about-card]");
 
     gsap.fromTo(
       cards,
-      {
-        opacity: 0,
-        y: 50,
-      },
+      { opacity: 0, y: 50 },
       {
         opacity: 1,
         y: 0,
         duration: 0.8,
-        stagger: 0.12,
+        stagger: 0.15,
         ease: "power3.out",
         scrollTrigger: {
           trigger: el,
@@ -47,145 +39,72 @@ export default function Codex() {
     );
   }, []);
 
+  const aboutCards = [
+    {
+      label: "Journey",
+      icon: "→",
+      content: personalPhilosophy.journey,
+    },
+    {
+      label: "Philosophy",
+      icon: "◆",
+      content: personalPhilosophy.philosophy,
+    },
+    {
+      label: "Mission",
+      icon: "⬡",
+      content: personalPhilosophy.goals,
+    },
+  ];
+
   return (
-    <section id="codex" className="py-32 px-6">
+    <section id="about" className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
-        <SectionHeader index="Chapter I" title="The Skills Codex" />
+        <SectionHeader index="01" title="About Me" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Left/Center: Characters Grid */}
-          <div ref={gridRef} className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {characters.map((char) => (
-              <div
-                key={char.name}
-                data-char-card
-                className="char-card p-6 cursor-pointer opacity-0 translate-y-8 flex flex-col justify-between min-h-[180px]"
-                style={{
-                  transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-                  perspective: "1000px",
-                }}
-                onClick={() => {
-                  AudioSynth.playClick();
-                  setSelectedChar(char);
-                }}
-                onMouseEnter={() => AudioSynth.playHover()}
-                onMouseMove={(e) => {
-                  const card = e.currentTarget;
-                  const rect = card.getBoundingClientRect();
-                  const x = e.clientX - rect.left;
-                  const y = e.clientY - rect.top;
-                  const rotX = (y - rect.height / 2) / 10;
-                  const rotY = (x - rect.width / 2) / -10;
-                  card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px)`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform =
-                    "perspective(1000px) rotateX(0) rotateY(0) translateY(0)";
-                }}
-              >
-                {/* Header */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl">{char.tilak}</span>
-                    <span className="text-primary font-mono text-[10px] tracking-widest uppercase">
-                      {char.emblem}
-                    </span>
-                  </div>
-                  <h3 className="font-serif text-xl font-bold text-text mb-1">{char.name}</h3>
-                  <p className="text-text-tertiary text-xs tracking-wider uppercase font-serif">
-                    {char.title}
-                  </p>
-                </div>
-
-                {/* Footer action */}
-                <div className="mt-6 flex items-center justify-between border-t border-border pt-3">
-                  <span className="text-text-tertiary text-[10px] font-mono">TAP FOR DETAILS</span>
-                  <span className="text-primary text-xs">❖</span>
-                </div>
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {aboutCards.map((card) => (
+            <div
+              key={card.label}
+              data-about-card
+              className="group p-8 rounded-lg border border-border bg-surface/40 hover:border-primary/30 hover:bg-surface/60 transition-all duration-500 opacity-0"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-primary font-mono text-[10px] tracking-widest uppercase">
+                  {card.label}
+                </span>
+                <span className="text-primary text-lg opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                  {card.icon}
+                </span>
               </div>
-            ))}
-          </div>
 
-          {/* Right: Character Detailed Stats Panel */}
-          <div className="glass gold-corners rounded-lg p-8 border border-border sticky top-28 min-h-[500px] flex flex-col justify-between">
-            {selectedChar ? (
-              <div className="flex flex-col gap-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-3xl">{selectedChar.tilak}</span>
-                    <span className="font-serif text-2xl font-bold text-gradient">
-                      {selectedChar.name}
-                    </span>
-                  </div>
-                  <p className="text-primary text-xs font-serif tracking-widest uppercase">
-                    {selectedChar.title}
-                  </p>
-                </div>
+              <p className="text-text-secondary text-sm leading-relaxed font-sans">
+                {card.content}
+              </p>
+            </div>
+          ))}
+        </div>
 
-                <div className="h-px bg-border-light" />
-
-                <div className="flex flex-col gap-2">
-                  <span className="text-text-tertiary text-[10px] tracking-wider uppercase font-mono">
-                    Backstory:
-                  </span>
-                  <p className="text-text-secondary text-sm leading-relaxed">
-                    {selectedChar.backstory}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <span className="text-text-tertiary text-[10px] tracking-wider uppercase font-mono">
-                    Signature Weapon:
-                  </span>
-                  <p className="text-primary font-serif text-sm font-semibold">
-                    ⚔️ {selectedChar.weapon}
-                  </p>
-                </div>
-
-                {/* Radar/Bar Stats */}
-                <div className="flex flex-col gap-4">
-                  <span className="text-text-tertiary text-[10px] tracking-wider uppercase font-mono">
-                    Attributes:
-                  </span>
-                  <div className="flex flex-col gap-3">
-                    {Object.entries(selectedChar.stats).map(([stat, val]) => (
-                      <div key={stat}>
-                        <div className="flex justify-between text-xs font-serif mb-1">
-                          <span className="capitalize">{stat}</span>
-                          <span className="text-primary font-mono">{val}%</span>
-                        </div>
-                        <div className="h-1 bg-border rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-primary to-accent-crimson transition-all duration-700 ease-out"
-                            style={{ width: `${val}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Royal Decree Quote */}
-                <div className="bg-primary-dim border border-primary/20 rounded p-4 font-serif italic text-sm text-primary leading-relaxed relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-1 opacity-10 text-4xl">❝</div>
-                  &ldquo;{selectedChar.quote}&rdquo;
-                </div>
-              </div>
-            ) : (
-              <div className="flex-center flex-col text-center h-full my-auto py-20 gap-4">
-                <span className="text-primary text-4xl animate-pulse">❖</span>
-                <div>
-                  <h3 className="font-serif text-lg font-semibold text-text mb-2">
-                    Royal Archives
-                  </h3>
-                  <p className="text-text-tertiary text-xs max-w-[240px] leading-relaxed font-sans">
-                    Select a discipline from the royal codex list to inspect code mastery levels,
-                    tool weapon specifications, and engineering philosophies.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+        {/* Quick stats row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+          {[
+            { value: "6+", label: "Years Experience" },
+            { value: "30+", label: "Projects Delivered" },
+            { value: "60fps", label: "Performance Target" },
+            { value: "∞", label: "Curiosity Level" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="text-center py-6 border border-border/50 rounded-lg bg-surface/20"
+            >
+              <span className="block text-3xl font-serif font-bold text-primary mb-1">
+                {stat.value}
+              </span>
+              <span className="text-text-tertiary text-[10px] font-mono tracking-widest uppercase">
+                {stat.label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

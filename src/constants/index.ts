@@ -1,134 +1,178 @@
 // ═══════════════════════════════════════════════════════════
-// PROJECT MAHISHMATI // CONSTANTS & DATA
-// Synthesizes Utkarsh's portfolio details with Baahubali lore.
+// PROJECT NEXUS // CONSTANTS & DATA
+// Clean developer portfolio data reflecting top-tier engineering
 // ═══════════════════════════════════════════════════════════
 
 export const navLinks = [
-  { href: "#codex", label: "Skills Codex" },
-  { href: "#battle", label: "Campaigns" },
-  { href: "#timeline", label: "The Ascent" },
-  { href: "#decree", label: "Petition" },
+  { href: "#about", label: "About" },
+  { href: "#skills", label: "Skills" },
+  { href: "#projects", label: "Projects" },
+  { href: "#experience", label: "Experience" },
+  { href: "#achievements", label: "Achievements" },
+  { href: "#contact", label: "Contact" },
 ];
 
-export const characters = [
-  {
-    name: "Amarendra Dev",
-    title: "Creative Frontend Mastery",
-    tilak: "🌙", // Crescent Moon
-    emblem: "⚛️ Three.js / React",
-    backstory:
-      "Equipped with crescent-balance design philosophies. Specializes in building highly immersive 3D user interfaces, complex GSAP animations, and custom shaders that run at a smooth 60fps.",
-    stats: {
-      interactivity: 98,
-      animations: 96,
-      threeJS: 95,
-      purity: 100,
-    },
-    weapon: "WebGL Vector Blade",
-    quote:
-      "Interfaces should not merely execute; they must capture the user's attention like a royal parade.",
-  },
-  {
-    name: "Mahendra Dev",
-    title: "Architectural Backend Power",
-    tilak: "🐍", // Serpent symbol
-    emblem: "🟢 Node.js / Python",
-    backstory:
-      "Possesses the raw strength required to build robust database schemas, secure API controllers, and real-time socket connections. Built to scale under any server pressure.",
-    stats: {
-      apiDesign: 95,
-      database: 94,
-      security: 90,
-      scalability: 96,
-    },
-    weapon: "Node.js Iron Hammer",
-    quote: "No database capacity is too heavy; we scale to climb any waterfall.",
-  },
-  {
-    name: "Kattappa Commander",
-    title: "Testing & DevOps Loyalty",
-    tilak: "⚔️", // Sword symbol
-    emblem: "🐳 Git / CI-CD",
-    backstory:
-      "The ultimate defender of code quality. Enforces strict unit test coverages, automated GitHub actions, Docker containers, and clean linting rules.",
-    stats: {
-      testCoverage: 98,
-      reliability: 99,
-      dockerCI: 92,
-      lintStrict: 100,
-    },
-    weapon: "ESLint Guard Shield",
-    quote: "My duty is to the absolute integrity of the main production branch.",
-  },
-];
-
-export const battleTactics = {
-  trishula: {
-    name: "Campaign I: Trishula War Console",
-    description:
-      "An interactive battlefield strategy simulator built for the royal guard of Mahishmati to evaluate Kalakeya troop formations.",
-    stats: {
-      defense: 95,
-      advantage: 90,
-      minimization: 92,
-    },
-    report:
-      "Trishula Console active. Procedural 3D rock/base geometries loading with dynamic spotlight vectors. Tactical summary coordinates synchronized successfully.",
-  },
-  chariot: {
-    name: "Campaign II: Project Nexus Art Bible",
-    description:
-      "A dark-themed documentation portal exhibiting visual design specifications, dot alignments, and bento grid layouts.",
-    stats: {
-      defense: 88,
-      advantage: 95,
-      minimization: 90,
-    },
-    report:
-      "Art Bible synced. Obsidian surfaces rendering with 24px structural grid lines. High-contrast typography optimized for both desktop and mobile screens.",
-  },
-  flamingBanner: {
-    name: "Campaign III: QuickBits Campus Food App",
-    description:
-      "A high-performance lifestyle application for campus food ordering using asymmetry and zero-border card layouts.",
-    stats: {
-      defense: 90,
-      advantage: 98,
-      minimization: 95,
-    },
-    report:
-      "QuickBits active. Fluid 12-column grid layout adapting smoothly to device sizes. Nesting levels defined using subtle gray scale shifts instead of lines.",
-  },
+export const personalPhilosophy = {
+  journey:
+    "Beginning as a self-taught engineer fascinated by creative tech, I have spent the last 6+ years constructing high-performance systems and interactive 3D digital environments.",
+  goals:
+    "My mission is to merge engineering precision with spatial design, building web experiences that are not only blazingly fast but visually unforgettable.",
+  philosophy:
+    "I believe that software should feel alive. Micro-animations, responsive spring physics, and organic lighting are not details—they are the core of a premium digital craft.",
 };
 
-export const narrativeTimeline = [
+export const skillsData = [
   {
-    chapter: "Stage I",
-    title: "Self-Taught Inception",
-    event:
-      "Lifting the heavy stones of algorithmic fundamentals. Discovered a passion for creative technologies and mastered JavaScript core mechanics.",
-    coordinates: "COORD 08.12 // WATERFALL",
+    category: "Frontend",
+    skills: [
+      "React / Next.js",
+      "TypeScript",
+      "Three.js / R3F",
+      "GSAP / Framer Motion",
+      "Tailwind CSS",
+      "WebGL / Shaders",
+    ],
   },
   {
-    chapter: "Stage II",
-    title: "Full-Stack Specialization",
-    event:
-      "Formulating structural database designs, building REST APIs, and contributing to open-source React systems. Mastered Next.js development flow.",
-    coordinates: "COORD 43.15 // KUNTALA",
+    category: "Backend",
+    skills: [
+      "Node.js / Express",
+      "Python / FastAPI",
+      "GraphQL / REST APIs",
+      "WebSockets / Socket.io",
+      "gRPC / Protocol Buffers",
+    ],
   },
   {
-    chapter: "Stage III",
-    title: "Production Battlegrounds",
-    event:
-      "Debugging critical server-side load capacity issues, coordinating testing pipelines, and protecting main branches under intense pressure.",
-    coordinates: "COORD 12.02 // RED SECTOR",
+    category: "Databases",
+    skills: ["PostgreSQL", "Redis Cache", "MongoDB", "Pinecone (Vector DB)", "Prisma / Mongoose"],
   },
   {
-    chapter: "Stage IV",
-    title: "Creative Technologist Era",
-    event:
-      "Synthesizing WebGL, React Three Fiber, GSAP, and advanced typography to construct award-winning interactive interfaces.",
-    coordinates: "COORD 99.01 // SINGULARITY",
+    category: "Cloud & DevOps",
+    skills: [
+      "Docker / Containers",
+      "Vercel / Netlify",
+      "Google Cloud / GCP",
+      "AWS Core Services",
+      "GitHub Actions CI/CD",
+    ],
+  },
+  {
+    category: "AI & Tools",
+    skills: [
+      "Gemini SDK / OpenAI API",
+      "LangChain / Agents",
+      "Git Version Control",
+      "Figma Design",
+      "Webpack / Vite",
+    ],
+  },
+];
+
+export const projectsData = [
+  {
+    id: "nexus-engine",
+    title: "Nexus 3D Fluid Engine",
+    description:
+      "An interactive browser-based WebGL fluid dynamics simulator rendering real-time physics and volumetric smoke displacement.",
+    tech: ["Three.js", "GLSL Shaders", "React Three Fiber", "GSAP"],
+    challenge:
+      "Rendering fluid turbulence on the CPU caused severe performance drops below 20 FPS.",
+    solution:
+      "Offloaded particle calculation to custom GPU fragment shaders using floating-point texture buffers.",
+    impact:
+      "Achieved buttery-smooth fluid simulations at 60 FPS on both mobile devices and high-DPI desktop screens.",
+    github: "https://github.com/utkarsh/nexus-engine",
+    demo: "https://nexus-engine.vercel.app",
+    image: "/project1.jpg",
+  },
+  {
+    id: "linear-orchestrator",
+    title: "Offline-First Task Orchestrator",
+    description:
+      "A fast, keyboard-shortcut driven command center and bento-grid board layout with real-time replication.",
+    tech: ["Next.js", "TypeScript", "Node.js", "Redis", "WebSockets"],
+    challenge:
+      "Preventing UI stutter or lag during batch synchronization on flaky network connections.",
+    solution:
+      "Designed an optimistic local cache state machine synchronized asynchronously via socket protocols.",
+    impact:
+      "Reduced local action response time to under 12ms and successfully synchronized tasks on reconnect without conflicts.",
+    github: "https://github.com/utkarsh/task-orchestrator",
+    demo: "https://task-orchestrator.vercel.app",
+    image: "/project2.jpg",
+  },
+  {
+    id: "stripe-billing",
+    title: "Stripe Real-Time Billing Telemetry",
+    description:
+      "Financial telemetry dashboard processing 10k transactions/sec with real-time websocket charting metrics.",
+    tech: ["React", "FastAPI", "PostgreSQL", "Redis", "Recharts"],
+    challenge:
+      "Buffering large volume transaction payloads without causing browser UI blocking or memory leaks.",
+    symbol: "⚡",
+    solution:
+      "Created a sliding-window data queue inside Web Workers to throttle state updates to exactly 60Hz.",
+    impact:
+      "Maintained a consistent 60 FPS chart render loop while visualising real-time transactions during spike intervals.",
+    github: "https://github.com/utkarsh/billing-telemetry",
+    demo: "https://billing-telemetry.vercel.app",
+    image: "/project3.jpg",
+  },
+];
+
+export const experienceTimeline = [
+  {
+    role: "Senior Creative Engineer",
+    company: "Vercel Partner Agency",
+    duration: "2024 - Present",
+    accomplishments: [
+      "Led developers in building motion-first interactive 3D product landing pages.",
+      "Developed reusable GSAP and Lenis scrolling architectures, reducing layout shift by 40%.",
+      "Integrated Gemini API integrations to automate procedural copywriting generation inside design files.",
+    ],
+  },
+  {
+    role: "Full-Stack Software Engineer",
+    company: "Stripe Integration Team",
+    duration: "2022 - 2024",
+    accomplishments: [
+      "Optimized API response pipelines, achieving a 15% reduction in latency for webhook dispatches.",
+      "Engineered real-time visual transaction telemetry logs using WebSockets and Redis channels.",
+      "Maintained 99.9% uptime by enforcing strict integration testing suites and CD deployments.",
+    ],
+  },
+  {
+    role: "Frontend Developer",
+    company: "Linear Design Partner",
+    duration: "2020 - 2022",
+    accomplishments: [
+      "Created sleek, command-menu dashboard controls using React, TailwindCSS, and framer-motion.",
+      "Authored custom UI libraries featuring rich micro-animations and accessibility features.",
+    ],
+  },
+];
+
+export const achievementsData = [
+  {
+    title: "Awwwards Developer Site of the Day Winner",
+    organization: "Awwwards Jury",
+    date: "Dec 2024",
+    description:
+      "Awarded for exceptional visual storytelling, R3F shader complexity, and performance scoring.",
+  },
+  {
+    title: "Global AI Hackathon — Best Agentic Orchestration",
+    organization: "OpenAI Sponsor Track",
+    date: "Jun 2024",
+    description: "Built an auto-recovering CI/CD workflow utilizing autonomous code repair agents.",
+  },
+  {
+    title: "Advanced WebGL & Shaders Certification",
+    organization: "ThreeJS Journey Academy",
+    date: "Mar 2023",
+    description:
+      "Mastered matrix transformations, raymarching, GPGPU simulations, and post-processing passes.",
   },
 ];
 

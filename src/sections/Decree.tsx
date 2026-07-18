@@ -3,21 +3,21 @@
 import { useState, useEffect, useRef } from "react";
 import SectionHeader from "@/components/SectionHeader";
 import Button from "@/components/Button";
+import { socialLinks } from "@/constants";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Decree — Chapter IV: Royal Petition
- * Styled contact form styled as a royal petition scroll to the kingdom.
+ * Contact — Professional contact form with social links
+ * Clean, minimal input fields with Electric Blue focus states
  */
-
-export default function Decree() {
+export default function Contact() {
   const [formData, setFormData] = useState({
-    title: "",
-    kingdom: "",
-    petition: "",
+    name: "",
+    email: "",
+    message: "",
   });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,10 +27,9 @@ export default function Decree() {
     setStatus("sending");
 
     try {
-      // Simulate royal scroll seal validation
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setStatus("success");
-      setFormData({ title: "", kingdom: "", petition: "" });
+      setFormData({ name: "", email: "", message: "" });
     } catch {
       setStatus("error");
     }
@@ -41,7 +40,6 @@ export default function Decree() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Scroll reveal trigger
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -65,34 +63,32 @@ export default function Decree() {
   }, []);
 
   return (
-    <section id="decree" className="py-32 px-6">
+    <section id="contact" className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
-        <SectionHeader index="Chapter IV" title="The Royal Decree" />
+        <SectionHeader index="06" title="Get In Touch" />
 
         <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8 items-start">
-          {/* Left Column: Form Scroll */}
-          <div className="glass gold-corners rounded p-8 border border-border opacity-0">
-            <h3 className="font-serif text-lg font-bold text-gradient mb-6 uppercase">
-              Submit a Royal Petition
-            </h3>
+          {/* Form */}
+          <div className="rounded-lg p-8 border border-border bg-surface/30 opacity-0">
+            <h3 className="font-serif text-lg font-bold text-text mb-6">Send a Message</h3>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label
-                    htmlFor="title"
+                    htmlFor="name"
                     className="block text-[10px] font-mono tracking-widest uppercase text-text-tertiary mb-2"
                   >
-                    Name & Title (e.g., Senapati)
+                    Full Name
                   </label>
                   <input
                     type="text"
-                    id="title"
-                    name="title"
+                    id="name"
+                    name="name"
                     required
-                    value={formData.title}
+                    value={formData.name}
                     onChange={handleChange}
-                    placeholder="Amarendra Baahubali"
+                    placeholder="John Doe"
                     className="form-field"
                     disabled={status === "sending"}
                   />
@@ -100,19 +96,19 @@ export default function Decree() {
 
                 <div>
                   <label
-                    htmlFor="kingdom"
+                    htmlFor="email"
                     className="block text-[10px] font-mono tracking-widest uppercase text-text-tertiary mb-2"
                   >
-                    Kingdom / Province
+                    Email Address
                   </label>
                   <input
-                    type="text"
-                    id="kingdom"
-                    name="kingdom"
+                    type="email"
+                    id="email"
+                    name="email"
                     required
-                    value={formData.kingdom}
+                    value={formData.email}
                     onChange={handleChange}
-                    placeholder="Mahishmati"
+                    placeholder="john@example.com"
                     className="form-field"
                     disabled={status === "sending"}
                   />
@@ -121,19 +117,19 @@ export default function Decree() {
 
               <div>
                 <label
-                  htmlFor="petition"
+                  htmlFor="message"
                   className="block text-[10px] font-mono tracking-widest uppercase text-text-tertiary mb-2"
                 >
-                  Petition / Message Scroll
+                  Your Message
                 </label>
                 <textarea
-                  id="petition"
-                  name="petition"
+                  id="message"
+                  name="message"
                   required
                   rows={5}
-                  value={formData.petition}
+                  value={formData.message}
                   onChange={handleChange}
-                  placeholder="Draft your decree to the royal throne here..."
+                  placeholder="Tell me about your project or opportunity..."
                   className="form-field resize-none"
                   disabled={status === "sending"}
                 />
@@ -141,58 +137,66 @@ export default function Decree() {
 
               <div className="mt-2">
                 <Button type="submit" variant="primary" className="w-full justify-center">
-                  {status === "sending" ? "Sealing Scroll..." : "Send Decree Scroll"}
+                  {status === "sending" ? "Sending..." : "Send Message"}
                 </Button>
               </div>
 
               {status === "success" && (
-                <p className="text-primary text-xs font-serif leading-relaxed mt-2 text-center animate-pulse">
-                  ❖ The royal seal has been stamped. Your petition is dispatched to Sivagami Devi.
+                <p className="text-primary text-xs leading-relaxed mt-2 text-center">
+                  ◆ Message sent successfully. I&apos;ll get back to you shortly.
                 </p>
               )}
               {status === "error" && (
-                <p className="text-error text-xs font-serif leading-relaxed mt-2 text-center">
-                  ◇ The carrier pigeon encountered a storm. Please resubmit your petition scroll.
+                <p className="text-error text-xs leading-relaxed mt-2 text-center">
+                  Something went wrong. Please try again.
                 </p>
               )}
             </form>
           </div>
 
-          {/* Right Column: Royal Stamp and Law specifications */}
+          {/* Contact Info */}
           <div className="flex flex-col gap-8 opacity-0">
-            <div className="glass gold-corners rounded p-8 border border-border">
-              <h3 className="font-serif text-lg font-bold text-text mb-4 uppercase">
-                The Sovereign Laws
-              </h3>
+            <div className="rounded-lg p-8 border border-border bg-surface/30">
+              <h3 className="font-serif text-lg font-bold text-text mb-4">Let&apos;s Connect</h3>
               <p className="text-text-secondary text-sm leading-relaxed mb-6 font-sans">
-                Every petition submitted is subject to the supreme command of Sivagami Devi. Any
-                request contesting the sovereignty of the throne of Mahishmati will be summarily
-                adjudicated by Commander Kattappa.
+                I&apos;m always open to discussing new projects, creative ideas, or opportunities to
+                be part of your engineering team. Feel free to reach out.
               </p>
 
               <div className="flex flex-col gap-4 text-xs font-mono">
                 <div className="flex items-center gap-3">
-                  <span className="text-primary">&gt; COURT STATUS:</span>
-                  <span className="text-text-secondary">CONVENING</span>
+                  <span className="text-primary">&gt; LOCATION:</span>
+                  <span className="text-text-secondary">India (IST)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-primary">&gt; ADJUDICATOR:</span>
-                  <span className="text-text-secondary">Sivagami Devi</span>
+                  <span className="text-primary">&gt; AVAILABILITY:</span>
+                  <span className="text-text-secondary">Open to opportunities</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-primary">&gt; RESPONSE TIME:</span>
+                  <span className="text-text-secondary">&lt; 24 hours</span>
                 </div>
               </div>
             </div>
 
-            {/* Stylized Sanskrit/Royal emblem block */}
-            <div className="bg-[#0f0c09] border border-border p-6 rounded font-mono text-[10px] text-text-tertiary leading-relaxed relative overflow-hidden flex flex-col gap-2">
-              <div className="absolute top-0 right-0 p-4 opacity-5 font-serif text-6xl text-primary pointer-events-none">
-                ॐ
+            {/* Social Links */}
+            <div className="rounded-lg p-8 border border-border bg-surface/30">
+              <h4 className="text-text-tertiary text-[10px] tracking-widest uppercase font-mono mb-4">
+                Social Coordinates
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 text-xs font-mono tracking-wider text-text-secondary border border-border rounded-md hover:border-primary hover:text-primary transition-all duration-300 no-underline"
+                  >
+                    {social.label}
+                  </a>
+                ))}
               </div>
-              <p className="text-primary font-bold">
-                MAHISHMATI SOVEREIGN PROTOCOL % ACCESS-SECURE
-              </p>
-              <p>&gt; Stamping signatures: Kattappa, Amarendra, Bhallala</p>
-              <p>&gt; Checking lineage alignment... Mahendra verified.</p>
-              <p className="text-success">&gt; Royal seal authentic.</p>
             </div>
           </div>
         </div>
