@@ -1,64 +1,110 @@
 "use client";
 
-import React from "react";
-import CanvasContainer from "@/components/canvas/CanvasContainer";
-import HUD from "@/components/dom/HUD";
-import AboutDossier from "@/components/dom/sections/AboutDossier";
-import ProjectsDossier from "@/components/dom/sections/ProjectsDossier";
-import PhilosophyDossier from "@/components/dom/sections/PhilosophyDossier";
-import ContactDossier from "@/components/dom/sections/ContactDossier";
+import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
+import Hero from "@/sections/Hero";
+import Codex from "@/sections/Codex";
+import BattleDashboard from "@/sections/BattleDashboard";
+import Timeline from "@/sections/Timeline";
+import Decree from "@/sections/Decree";
+import Footer from "@/sections/Footer";
+import CustomCursor from "@/components/CustomCursor";
+import LoadingScreen from "@/components/LoadingScreen";
 import { useStore } from "@/store/useStore";
+import gsap from "gsap";
 
+/**
+ * Main Home Page
+ * Composes all Mahishmati chapters into a single responsive vertical scrolling interface.
+ * Implements a simple scroll spy system to update the active navbar section.
+ * Mounts CustomCursor, LoadingScreen, and mouse-parallax background glows.
+ */
 export default function Home() {
-  const focusedObject = useStore((state) => state.focusedObject);
+  const { setActiveSection } = useStore();
+  const [loadingComplete, setLoadingComplete] = useState(false);
+
+  // Scroll spy section tracker
+  useEffect(() => {
+    const sections = ["hero", "codex", "battle", "timeline", "decree"];
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 200; // Offset for headers
+
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (!el) continue;
+
+        const { top, bottom } = el.getBoundingClientRect();
+        const absoluteTop = top + window.scrollY;
+        const absoluteBottom = bottom + window.scrollY;
+
+        if (scrollPosition >= absoluteTop && scrollPosition < absoluteBottom) {
+          setActiveSection(section);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initial call
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [setActiveSection]);
+
+  // Subtle background glow parallax movement
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const xOffset = (clientX / window.innerWidth - 0.5) * 55;
+      const yOffset = (clientY / window.innerHeight - 0.5) * 55;
+
+      gsap.to(".bg-glow-1", {
+        x: xOffset,
+        y: yOffset,
+        duration: 1.5,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+
+      gsap.to(".bg-glow-2", {
+        x: -xOffset,
+        y: -yOffset,
+        duration: 1.5,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
-    <main className="relative h-screen w-screen bg-[#0a0a0f] overflow-hidden select-none">
-      {/* 3D WebGL Canvas Layer */}
-      <div className="absolute inset-0 z-0">
-        <CanvasContainer />
-      </div>
+    <div className="relative min-h-screen bg-background text-text overflow-hidden selection:bg-primary-dim selection:text-primary">
+      {/* Cinematic Custom Cursor Follower */}
+      <CustomCursor />
 
-      {/* DOM Interactive Layer */}
-      <div className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-8 md:p-12">
-        {/* Header HUD */}
-        <header className="flex justify-between items-start pointer-events-auto">
-          <div>
-            <h1 className="font-[var(--font-inter)] text-sm font-semibold tracking-[0.2em] text-zinc-150">
-              PROJECT NEXUS
-            </h1>
-            <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-widest text-zinc-500 mt-1 block">
-              MINIATURE ARCHIVE WORLD // PROTOTYPE 1.1
-            </span>
-          </div>
-          <div className="text-right">
-            <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-widest text-zinc-400">
-              EST. FREQUENCY // 5800 MHz
-            </span>
-          </div>
-        </header>
+      {/* Intro loading animation */}
+      {!loadingComplete && <LoadingScreen onComplete={() => setLoadingComplete(true)} />}
 
-        {/* Center Bottom Hover Hint (fades out when focused) */}
-        <div
-          className="w-full flex justify-center pb-6 transition-opacity duration-700"
-          style={{ opacity: focusedObject === null ? 1 : 0 }}
-        >
-          <div className="bg-zinc-950/60 border border-zinc-900/60 px-4 py-2 backdrop-blur-sm rounded-sm">
-            <span className="font-[var(--font-fira-code)] text-[9px] uppercase tracking-[0.25em] text-zinc-500 animate-pulse">
-              [ Hover and Click Floating Objects to Explore ]
-            </span>
-          </div>
-        </div>
-      </div>
+      {/* Royal Volumetric Lighting Glows with Mouse Parallax classes */}
+      <div className="bg-glow-1 pointer-events-none fixed -top-[40%] -left-[20%] w-[80%] aspect-square rounded-full bg-primary/5 blur-[150px] z-0" />
+      <div className="bg-glow-2 pointer-events-none fixed -bottom-[40%] -right-[20%] w-[80%] aspect-square rounded-full bg-accent-crimson/5 blur-[150px] z-0" />
 
-      {/* Spatial HUD Compass navigation menu */}
-      <HUD />
+      {/* Navigation */}
+      <Navbar />
 
-      {/* Dossier Content Slide-in Panels */}
-      <AboutDossier />
-      <ProjectsDossier />
-      <PhilosophyDossier />
-      <ContactDossier />
-    </main>
+      {/* Main Page Layout */}
+      <main className="relative z-10">
+        <Hero />
+        <Codex />
+        <BattleDashboard />
+        <Timeline />
+        <Decree />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 }

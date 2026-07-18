@@ -9,20 +9,20 @@ import Providers from "@/components/dom/Providers";
  */
 
 export const metadata: Metadata = {
-  title: "PROJECT NEXUS // The Living Mind",
+  title: "MAHISHMATI // Baahubali: The Interactive Epic",
   description:
-    "An interactive digital headquarters mapping an engineering journey through spatial, brutalist structures.",
+    "Explore the royal courts, strategic battlefronts, and legends of the Mahishmati Kingdom in this interactive digital experience.",
   openGraph: {
-    title: "PROJECT NEXUS // The Living Mind",
+    title: "MAHISHMATI // Baahubali: The Interactive Epic",
     description:
-      "An interactive digital headquarters mapping an engineering journey through spatial, brutalist structures.",
+      "Explore the royal courts, strategic battlefronts, and legends of the Mahishmati Kingdom in this interactive digital experience.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PROJECT NEXUS // The Living Mind",
+    title: "MAHISHMATI // Baahubali: The Interactive Epic",
     description:
-      "An interactive digital headquarters mapping an engineering journey through spatial, brutalist structures.",
+      "Explore the royal courts, strategic battlefronts, and legends of the Mahishmati Kingdom in this interactive digital experience.",
   },
 };
 
