@@ -76,8 +76,12 @@ export default function Experience() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="experience" className="py-32 px-6">
-      <div className="max-w-5xl mx-auto">
+    <section
+      ref={sectionRef}
+      id="experience"
+      className="relative h-full flex items-center py-12 md:py-20 px-6"
+    >
+      <div className="max-w-5xl mx-auto w-full">
         <SectionHeader index="04" title="Experience" />
 
         <div className="relative">

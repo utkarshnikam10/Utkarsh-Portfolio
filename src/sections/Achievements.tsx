@@ -40,8 +40,8 @@ export default function Achievements() {
   }, []);
 
   return (
-    <section id="achievements" className="py-32 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="achievements" className="relative h-full flex items-center py-12 md:py-20 px-6">
+      <div className="max-w-7xl mx-auto w-full">
         <SectionHeader index="05" title="Achievements" />
 
         <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">

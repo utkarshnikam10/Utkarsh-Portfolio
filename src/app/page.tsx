@@ -14,10 +14,13 @@ import CustomCursor from "@/components/CustomCursor";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useStore } from "@/store/useStore";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
  * NEXUS — Main Portfolio Page
- * Composes all sections into a premium single-page scrolling experience.
+ * Composes sections into a premium stacked-card scrolling experience.
  */
 export default function Home() {
   const { setActiveSection } = useStore();
@@ -59,7 +62,39 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [setActiveSection]);
 
-  // Subtle background glow parallax
+  // Stacked Card GSAP animation
+  useEffect(() => {
+    if (!loadingComplete) return;
+
+    // Wait short delay for R3F and layouts to stabilize
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray(".stack-card") as HTMLElement[];
+      cards.forEach((card, index) => {
+        if (index === cards.length - 1) return; // Don't animate the last card (Contact)
+
+        const nextCard = cards[index + 1];
+
+        gsap.to(card, {
+          scale: 0.94,
+          opacity: 0.35,
+          filter: "blur(2px)",
+          scrollTrigger: {
+            trigger: nextCard,
+            start: "top 100%", // Start transition when next card starts entering
+            end: "top 0%", // Finish transition when next card covers it
+            scrub: true,
+          },
+        });
+      });
+    });
+
+    return () => {
+      ctx.revert();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, [loadingComplete]);
+
+  // Background glow mouse parallax
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -88,25 +123,39 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-background text-text overflow-hidden selection:bg-primary-dim selection:text-primary">
+    <div className="relative min-h-screen bg-background text-text overflow-x-hidden selection:bg-primary-dim selection:text-primary">
       <CustomCursor />
 
       {!loadingComplete && <LoadingScreen onComplete={() => setLoadingComplete(true)} />}
 
-      {/* Ambient Glow Layers */}
+      {/* Ambient Glows */}
       <div className="bg-glow-1 pointer-events-none fixed -top-[40%] -left-[20%] w-[80%] aspect-square rounded-full bg-primary/5 blur-[150px] z-0" />
       <div className="bg-glow-2 pointer-events-none fixed -bottom-[40%] -right-[20%] w-[80%] aspect-square rounded-full bg-primary/3 blur-[150px] z-0" />
 
       <Navbar />
 
       <main className="relative z-10">
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Experience />
-        <Achievements />
-        <Contact />
+        <div id="hero" className="stack-card z-10">
+          <Hero />
+        </div>
+        <div id="about" className="stack-card z-20">
+          <About />
+        </div>
+        <div id="skills" className="stack-card z-30">
+          <Skills />
+        </div>
+        <div id="projects" className="stack-card z-40">
+          <Projects />
+        </div>
+        <div id="experience" className="stack-card z-50">
+          <Experience />
+        </div>
+        <div id="achievements" className="stack-card z-60">
+          <Achievements />
+        </div>
+        <div id="contact" className="stack-card z-70">
+          <Contact />
+        </div>
       </main>
 
       <Footer />

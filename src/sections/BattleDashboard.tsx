@@ -40,8 +40,11 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" className="py-32 px-6 bg-gradient-to-b from-transparent to-surface/20">
-      <div className="max-w-7xl mx-auto">
+    <section
+      id="projects"
+      className="relative h-full flex items-center py-12 md:py-20 px-6 bg-gradient-to-b from-transparent to-surface/20"
+    >
+      <div className="max-w-7xl mx-auto w-full">
         <SectionHeader index="03" title="Featured Projects" />
 
         <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mt-8">

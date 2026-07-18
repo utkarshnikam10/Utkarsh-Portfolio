@@ -42,8 +42,8 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="py-32 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="skills" className="relative h-full flex items-center py-12 md:py-20 px-6">
+      <div className="max-w-7xl mx-auto w-full">
         <SectionHeader index="02" title="Technical Skills" />
 
         <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

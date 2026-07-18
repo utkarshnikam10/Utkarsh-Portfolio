@@ -63,8 +63,8 @@ export default function Contact() {
   }, []);
 
   return (
-    <section id="contact" className="py-32 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="contact" className="relative h-full flex items-center py-12 md:py-20 px-6">
+      <div className="max-w-7xl mx-auto w-full">
         <SectionHeader index="06" title="Get In Touch" />
 
         <div ref={containerRef} className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-8 items-start">

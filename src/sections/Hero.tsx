@@ -56,7 +56,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden pt-24">
+    <section id="hero" className="relative h-full flex items-center overflow-hidden py-12 md:py-20">
       {/* Subtle radial vignette */}
       <div className="absolute inset-0 bg-radial-[circle_at_center,transparent_40%,var(--color-background)_90%] z-10 pointer-events-none" />
 
