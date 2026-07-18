@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/store/useStore";
+import { useMagneticHover } from "@/hooks/useMagneticHover";
 
 /**
  * ThemeToggle — Animated sun/moon toggle
@@ -9,11 +10,13 @@ import { useStore } from "@/store/useStore";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useStore();
+  const ref = useMagneticHover(20, 0.3);
 
   return (
     <button
+      ref={ref}
       onClick={toggleTheme}
-      className="relative w-10 h-10 flex-center rounded-full hover:bg-surface transition-colors duration-300"
+      className="relative w-10 h-10 flex-center rounded-full hover:bg-surface transition-colors duration-300 inline-block"
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
       <svg

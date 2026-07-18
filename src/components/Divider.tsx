@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Divider — hamishw.com-style notched divider line
- * The line draws left-to-right, then the notch pops up.
+ * Divider — Notched divider line
+ * The line draws left-to-right, then the notch pops up using GSAP ScrollTrigger.
  */
 
 interface DividerProps {
@@ -13,60 +17,44 @@ interface DividerProps {
 }
 
 export default function Divider({ className = "", notch = true }: DividerProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = containerRef.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.setAttribute("data-visible", "true");
-          observer.disconnect();
-        }
+    const line = el.querySelector(".divider-line");
+    const notchEl = el.querySelector(".divider-notch");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: "top 90%",
+        toggleActions: "play none none none",
       },
-      { threshold: 0.2 }
+    });
+
+    tl.fromTo(
+      line,
+      { scaleX: 0 },
+      { scaleX: 1, duration: 1.0, ease: "power3.out", transformOrigin: "left" }
     );
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    if (notch && notchEl) {
+      tl.fromTo(
+        notchEl,
+        { scaleY: 0 },
+        { scaleY: 1, duration: 0.4, ease: "back.out(1.5)" },
+        "-=0.4"
+      );
+    }
+  }, [notch]);
 
   return (
-    <div ref={ref} className={`flex items-center gap-4 ${className}`} data-visible="false">
-      <div
-        className="divider-line flex-1"
-        data-visible="false"
-        ref={(lineEl) => {
-          if (!lineEl) return;
-          const parent = lineEl.closest("[data-visible]");
-          if (parent) {
-            const obs = new MutationObserver(() => {
-              lineEl.setAttribute("data-visible", parent.getAttribute("data-visible") || "false");
-            });
-            obs.observe(parent, { attributes: true, attributeFilter: ["data-visible"] });
-          }
-        }}
-      />
+    <div ref={containerRef} className={`flex items-center gap-4 ${className}`}>
+      <div className="divider-line flex-1 h-[0.5px] bg-[rgba(212,175,55,0.2)] origin-left scale-x-0" />
       {notch && (
-        <div
-          className="divider-notch"
-          data-visible="false"
-          ref={(notchEl) => {
-            if (!notchEl) return;
-            const parent = notchEl.closest("[data-visible]");
-            if (parent) {
-              const obs = new MutationObserver(() => {
-                notchEl.setAttribute(
-                  "data-visible",
-                  parent.getAttribute("data-visible") || "false"
-                );
-              });
-              obs.observe(parent, { attributes: true, attributeFilter: ["data-visible"] });
-            }
-          }}
-        />
+        <div className="divider-notch w-[24px] h-[12px] bg-transparent border-l border-r border-b border-primary relative origin-top scale-y-0 after:content-['❖'] after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-[8px] after:text-primary" />
       )}
     </div>
   );
