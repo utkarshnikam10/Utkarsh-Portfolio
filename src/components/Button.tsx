@@ -2,6 +2,7 @@
 
 import { useRef, useCallback } from "react";
 import gsap from "gsap";
+import { AudioSynth } from "@/utils/audio";
 
 /**
  * Button — Magnetic CTA button with hover pull effect
@@ -46,6 +47,10 @@ export default function Button({
     });
   }, []);
 
+  const handleMouseEnter = useCallback(() => {
+    AudioSynth.playHover();
+  }, []);
+
   const handleMouseLeave = useCallback(() => {
     const el = ref.current;
     if (!el) return;
@@ -59,6 +64,11 @@ export default function Button({
     });
   }, []);
 
+  const handleClickInternal = useCallback(() => {
+    AudioSynth.playClick();
+    if (onClick) onClick();
+  }, [onClick]);
+
   const btnClass = `cta-btn magnetic-btn ${
     variant === "primary" ? "cta-btn-primary" : "cta-btn-secondary"
   } ${className}`;
@@ -70,7 +80,9 @@ export default function Button({
         href={href}
         className={btnClass}
         onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={handleClickInternal}
       >
         <span>{children}</span>
         {icon && (
@@ -86,9 +98,10 @@ export default function Button({
     <button
       ref={ref}
       className={btnClass}
-      onClick={onClick}
+      onClick={handleClickInternal}
       type={type}
       onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <span>{children}</span>

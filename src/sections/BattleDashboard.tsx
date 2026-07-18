@@ -5,6 +5,7 @@ import SectionHeader from "@/components/SectionHeader";
 import { battleTactics } from "@/constants";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { AudioSynth } from "@/utils/audio";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -84,7 +85,11 @@ export default function BattleDashboard() {
               return (
                 <button
                   key={key}
-                  onClick={() => setActiveTactic(key)}
+                  onClick={() => {
+                    AudioSynth.playClick();
+                    setActiveTactic(key);
+                  }}
+                  onMouseEnter={() => AudioSynth.playHover()}
                   className={`w-full text-left p-6 rounded-sm border transition-all duration-300 ${
                     isSelected
                       ? "border-primary bg-primary-dim shadow-[0_0_15px_rgba(212,175,55,0.1)]"

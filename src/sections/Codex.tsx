@@ -5,6 +5,7 @@ import SectionHeader from "@/components/SectionHeader";
 import { characters } from "@/constants";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { AudioSynth } from "@/utils/audio";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -63,7 +64,11 @@ export default function Codex() {
                   transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                   perspective: "1000px",
                 }}
-                onClick={() => setSelectedChar(char)}
+                onClick={() => {
+                  AudioSynth.playClick();
+                  setSelectedChar(char);
+                }}
+                onMouseEnter={() => AudioSynth.playHover()}
                 onMouseMove={(e) => {
                   const card = e.currentTarget;
                   const rect = card.getBoundingClientRect();

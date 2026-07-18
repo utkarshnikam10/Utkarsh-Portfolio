@@ -2,6 +2,7 @@
 
 import { useStore } from "@/store/useStore";
 import { useMagneticHover } from "@/hooks/useMagneticHover";
+import { AudioSynth } from "@/utils/audio";
 
 /**
  * ThemeToggle — Animated sun/moon toggle
@@ -15,7 +16,11 @@ export default function ThemeToggle() {
   return (
     <button
       ref={ref}
-      onClick={toggleTheme}
+      onClick={() => {
+        AudioSynth.playClick();
+        toggleTheme();
+      }}
+      onMouseEnter={() => AudioSynth.playHover()}
       className="relative w-10 h-10 flex-center rounded-full hover:bg-surface transition-colors duration-300 inline-block"
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >

@@ -5,6 +5,7 @@ import { navLinks, socialLinks } from "@/constants";
 import ThemeToggle from "./ThemeToggle";
 import { useStore } from "@/store/useStore";
 import { useMagneticHover } from "@/hooks/useMagneticHover";
+import { AudioSynth } from "@/utils/audio";
 
 /**
  * NavLink — Subcomponent holding ref to apply magnetic draw
@@ -24,7 +25,11 @@ function NavLink({
     <a
       ref={ref}
       href={link.href}
-      onClick={(e) => handleNavClick(e, link.href)}
+      onClick={(e) => {
+        AudioSynth.playClick();
+        handleNavClick(e, link.href);
+      }}
+      onMouseEnter={() => AudioSynth.playHover()}
       className={`nav-link inline-block ${activeSection === link.href.replace("#", "") ? "active" : ""}`}
     >
       {link.label}
@@ -146,7 +151,10 @@ export default function Navbar() {
           <a
             key={link.href}
             href={link.href}
-            onClick={(e) => handleNavClick(e, link.href)}
+            onClick={(e) => {
+              AudioSynth.playClick();
+              handleNavClick(e, link.href);
+            }}
             className="text-2xl font-semibold text-text hover:text-primary transition-colors"
             style={{
               transitionDelay: navOpen ? `${i * 100}ms` : "0ms",
