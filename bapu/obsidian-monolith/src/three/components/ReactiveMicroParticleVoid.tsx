@@ -93,17 +93,14 @@ const microParticleVertexShader = /* glsl */ `
     flowPos.xz *= rot;
 
     // Simulate flow integration (pseudo-advecting along noise vectors)
-    // This creates the look of smoke, silk, or flowing water currents
+    // Single-pass organic flow calculation for maximum GPU efficiency
     float flowTime = uTime * 0.15;
-    for(int i = 0; i < 3; i++) {
-      vec3 currentNoise = vec3(
-        snoise(vec3(flowPos.y * 0.1, flowPos.z * 0.1, flowTime)),
-        snoise(vec3(flowPos.z * 0.1, flowPos.x * 0.1, flowTime + 10.0)),
-        snoise(vec3(flowPos.x * 0.1, flowPos.y * 0.1, flowTime + 20.0))
-      );
-      // Push the particle along the noise vector
-      flowPos += currentNoise * 1.2;
-    }
+    vec3 currentNoise = vec3(
+      snoise(vec3(flowPos.y * 0.1, flowPos.z * 0.1, flowTime)),
+      snoise(vec3(flowPos.z * 0.1, flowPos.x * 0.1, flowTime + 10.0)),
+      snoise(vec3(flowPos.x * 0.1, flowPos.y * 0.1, flowTime + 20.0))
+    );
+    flowPos += currentNoise * 2.2;
 
     pos = flowPos;
 
@@ -209,12 +206,12 @@ export function ReactiveMicroParticleVoid() {
   // Track global pointer to bypass DOM overlay blocking Canvas events
   const globalPointer = useRef(new THREE.Vector2(0, 0));
 
-  const [particleCount, setParticleCount] = useState(120000);
+  const [particleCount, setParticleCount] = useState(35000);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const updateCount = () => {
-      setParticleCount(window.innerWidth <= 768 ? 15000 : 120000);
+      setParticleCount(window.innerWidth <= 768 ? 8000 : 35000);
     };
     updateCount();
     window.addEventListener("resize", updateCount);

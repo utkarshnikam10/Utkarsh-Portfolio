@@ -163,7 +163,7 @@ export default function WorldScene({ highlightIndex = null }: WorldSceneProps = 
       {mounted && (
         <Canvas
           camera={{ position: [0, 0, 7.5], fov: 45 }}
-          dpr={isMobile ? 1 : 1.5}
+          dpr={isMobile ? [0.75, 1.0] : [1.0, 1.25]}
           gl={{
             antialias: !isMobile,
             alpha: false,

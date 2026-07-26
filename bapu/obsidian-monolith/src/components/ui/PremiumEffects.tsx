@@ -8,27 +8,13 @@ import React, { useEffect, useRef, useState } from "react";
  */
 export function FilmGrainOverlay() {
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none mix-blend-overlay opacity-[0.035]">
-      <svg className="w-full h-full">
-        <filter id="grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#grain)" />
-      </svg>
-      <style jsx>{`
-        svg {
-          animation: grainShift 0.5s steps(6) infinite;
-        }
-        @keyframes grainShift {
-          0%, 100% { transform: translate(0, 0); }
-          20% { transform: translate(-2%, -1%); }
-          40% { transform: translate(1%, 2%); }
-          60% { transform: translate(-1%, -2%); }
-          80% { transform: translate(2%, 1%); }
-        }
-      `}</style>
-    </div>
+    <div
+      className="fixed inset-0 z-40 pointer-events-none opacity-[0.025]"
+      style={{
+        backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 0)`,
+        backgroundSize: "24px 24px",
+      }}
+    />
   );
 }
 

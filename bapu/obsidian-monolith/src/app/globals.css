@@ -367,10 +367,8 @@
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
   pointer-events: none;
   will-change: transform;
-  mix-blend-mode: screen;
 }
 
 .ambient-orb-cyan {
