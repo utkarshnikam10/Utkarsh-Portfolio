@@ -4,16 +4,81 @@ import React, { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
+import { ObsidianSculpture } from "./ObsidianSculpture";
 
 interface MonolithHeroProps {
   visible: boolean;
 }
 
+/**
+ * CyberOrbitalRings — Concentric glowing holographic rings orbiting the monolith.
+ */
+function CyberOrbitalRings({ visible }: { visible: boolean }) {
+  const ring1Ref = useRef<THREE.Group>(null);
+  const ring2Ref = useRef<THREE.Group>(null);
+  const ring3Ref = useRef<THREE.Group>(null);
+
+  useFrame((state, delta) => {
+    if (!visible) return;
+    const t = state.clock.getElapsedTime();
+    if (ring1Ref.current) {
+      ring1Ref.current.rotation.z = t * 0.15;
+      ring1Ref.current.rotation.x = Math.sin(t * 0.2) * 0.15;
+    }
+    if (ring2Ref.current) {
+      ring2Ref.current.rotation.z = -t * 0.22;
+      ring2Ref.current.rotation.y = Math.cos(t * 0.25) * 0.2;
+    }
+    if (ring3Ref.current) {
+      ring3Ref.current.rotation.x = t * 0.18;
+      ring3Ref.current.rotation.y = t * 0.12;
+    }
+  });
+
+  if (!visible) return null;
+
+  return (
+    <group>
+      {/* Outer Cyan Energy Ring */}
+      <group ref={ring1Ref} rotation={[Math.PI / 3, 0, 0]}>
+        <mesh>
+          <torusGeometry args={[3.2, 0.012, 16, 100]} />
+          <meshBasicMaterial color="#38bdf8" transparent opacity={0.6} />
+        </mesh>
+        {/* Energy nodes on ring */}
+        {[0, Math.PI * 0.67, Math.PI * 1.33].map((angle, i) => (
+          <mesh
+            key={i}
+            position={[Math.cos(angle) * 3.2, Math.sin(angle) * 3.2, 0]}
+          >
+            <sphereGeometry args={[0.04, 12, 12]} />
+            <meshBasicMaterial color="#ffff23" />
+          </mesh>
+        ))}
+      </group>
+
+      {/* Mid Gold Energy Ring */}
+      <group ref={ring2Ref} rotation={[-Math.PI / 4, Math.PI / 6, 0]}>
+        <mesh>
+          <torusGeometry args={[2.5, 0.008, 16, 100]} />
+          <meshBasicMaterial color="#ffff23" transparent opacity={0.5} />
+        </mesh>
+      </group>
+
+      {/* Inner Quantum Ring */}
+      <group ref={ring3Ref} rotation={[0, Math.PI / 3, Math.PI / 4]}>
+        <mesh>
+          <torusGeometry args={[1.9, 0.006, 16, 80]} />
+          <meshBasicMaterial color="#a855f7" transparent opacity={0.4} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 export function MonolithHero({ visible }: MonolithHeroProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
   const { pointer } = useThree();
-
   const targetRotation = useRef({ x: 0, y: 0 });
 
   useFrame((_, delta) => {
@@ -25,18 +90,18 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
       THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, delta * 4.0)
     );
 
-    if (visible && meshRef.current) {
-      // Subtle cursor parallax rotation (capped at +/- 15 degrees)
-      targetRotation.current.x = pointer.y * 0.15;
-      targetRotation.current.y = pointer.x * 0.25;
+    if (visible) {
+      // Smooth cursor parallax rotation
+      targetRotation.current.x = pointer.y * 0.2;
+      targetRotation.current.y = pointer.x * 0.3;
 
-      meshRef.current.rotation.x = THREE.MathUtils.lerp(
-        meshRef.current.rotation.x,
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
         targetRotation.current.x,
         delta * 3.0
       );
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(
-        meshRef.current.rotation.y,
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+        groupRef.current.rotation.y,
         targetRotation.current.y,
         delta * 3.0
       );
@@ -45,39 +110,33 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
 
   return (
     <group ref={groupRef}>
-      {/* Soft key light */}
+      {/* Dynamic Key SpotLight */}
       <spotLight
-        position={[2, 4, 5]}
-        angle={0.5}
-        penumbra={0.9}
-        intensity={visible ? 4.5 : 0}
+        position={[4, 6, 6]}
+        angle={0.6}
+        penumbra={0.8}
+        intensity={visible ? 6.0 : 0}
         color="#ffffff"
       />
-      {/* Cool rim light */}
+      {/* Electric Rim Light */}
       <directionalLight
-        position={[-3, 2, -2]}
-        intensity={visible ? 1.2 : 0}
+        position={[-4, 3, -3]}
+        intensity={visible ? 2.5 : 0}
         color="#38bdf8"
       />
+      {/* Warm Ambient Gold Fill */}
+      <pointLight
+        position={[0, -2, 3]}
+        intensity={visible ? 1.8 : 0}
+        color="#ffff23"
+        distance={8}
+      />
 
-      <Float speed={1.2} rotationIntensity={0.05} floatIntensity={0.25}>
-        <mesh ref={meshRef} position={[0, 0, 0]}>
-          {/* Bevelled obsidian glass monolith slab */}
-          <boxGeometry args={[2.4, 4.2, 0.2]} />
-          <meshPhysicalMaterial
-            color="#050508"
-            roughness={0.05}
-            metalness={0.85}
-            transmission={0.92}
-            thickness={1.5}
-            ior={1.52}
-            dispersion={0.04}
-            clearcoat={1.0}
-            clearcoatRoughness={0.03}
-            reflectivity={0.9}
-          />
-        </mesh>
-      </Float>
+      {/* Cybernetic Orbital Holo-Rings */}
+      <CyberOrbitalRings visible={visible} />
+
+      {/* Central Interactive Obsidian Fragmented Sculpture */}
+      <ObsidianSculpture />
     </group>
   );
 }

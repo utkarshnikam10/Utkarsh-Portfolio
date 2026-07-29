@@ -274,7 +274,7 @@ export function PortfolioSections({ onHighlightProject }: PortfolioSectionsProps
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-[9px] tracking-[0.3em] uppercase text-white/30">
           <div className="flex items-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow-pulse" />
-            <span>© {new Date().getFullYear()} UTKARSH TIWARI</span>
+            <span>© {new Date().getFullYear()} {profile.name.toUpperCase()}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-white/15">CRAFTED WITH</span>
