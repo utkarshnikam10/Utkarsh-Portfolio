@@ -159,10 +159,10 @@ const morphFragmentShader = /* glsl */ `
 `;
 
 interface MorphingSphereProps {
-  visible: boolean;
+  visible?: boolean;
 }
 
-export function MorphingSphere({ visible }: MorphingSphereProps) {
+export function MorphingSphere({ visible = true }: MorphingSphereProps = {}) {
   const meshRef = useRef<THREE.Mesh>(null);
   const { pointer } = useThree();
 

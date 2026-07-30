@@ -82,25 +82,25 @@ const microParticleVertexShader = /* glsl */ `
     vPhase = aPhase;
     vec3 pos = position;
 
-    // 1. PSEUDO-ADVECTION FLOW FIELD (True Organic Fluid Motion)
-    // Instead of vibrating around a static point, we simulate fluid integration
-    // by moving the particle along a noise gradient over time.
+    // 1. CONTINUOUS ORGANIC FLUID ADVECTION (Living Cosmic Dust Motion)
+    // Particles continuously drift, swirl, and breathe even when idle!
     vec3 flowPos = pos;
     
-    // We add a slow global rotation to the whole field to give it a living macro-structure
-    float theta = uTime * 0.05 + aPhase * 0.1;
-    mat2 rot = mat2(cos(theta), -sin(theta), sin(theta), cos(theta));
-    flowPos.xz *= rot;
+    // Dynamic 3D orbital vorticity
+    float theta = uTime * 0.18 + aPhase * 6.28;
+    float orbitRadius = 0.4 + sin(uTime * 0.8 + aPhase * 3.14) * 0.3;
+    flowPos.x += cos(theta) * orbitRadius;
+    flowPos.y += sin(theta * 1.3) * orbitRadius;
+    flowPos.z += sin(theta * 0.7) * orbitRadius;
 
-    // Simulate flow integration (pseudo-advecting along noise vectors)
-    // Single-pass organic flow calculation for maximum GPU efficiency
-    float flowTime = uTime * 0.15;
+    // Organic noise advection flow vector
+    float flowTime = uTime * 0.25;
     vec3 currentNoise = vec3(
-      snoise(vec3(flowPos.y * 0.1, flowPos.z * 0.1, flowTime)),
-      snoise(vec3(flowPos.z * 0.1, flowPos.x * 0.1, flowTime + 10.0)),
-      snoise(vec3(flowPos.x * 0.1, flowPos.y * 0.1, flowTime + 20.0))
+      snoise(vec3(flowPos.y * 0.15, flowPos.z * 0.15, flowTime)),
+      snoise(vec3(flowPos.z * 0.15, flowPos.x * 0.15, flowTime + 10.0)),
+      snoise(vec3(flowPos.x * 0.15, flowPos.y * 0.15, flowTime + 20.0))
     );
-    flowPos += currentNoise * 2.2;
+    flowPos += currentNoise * 3.2;
 
     pos = flowPos;
 
@@ -112,20 +112,19 @@ const microParticleVertexShader = /* glsl */ `
     float distToMouse = length(dirToMouse3D);
     vDistToMouse = distToMouse;
 
-    // Smoothstep falloff eliminates boundary snapping
-    // REDUCED RADIUS: From 5.0 down to 1.8 for a tighter, more elegant interaction
-    float influence = smoothstep(1.8, 0.0, distToMouse);
+    // Smoothstep falloff across 3.2 unit interaction radius
+    float influence = smoothstep(3.2, 0.0, distToMouse);
     
     if (influence > 0.0) {
       vec3 normDir = dirToMouse3D / (distToMouse + 0.001); // Prevent division by zero
       float mouseVelMag = length(uMouseVel);
       
       // Push force scales smoothly with distance and velocity
-      float pushForce = influence * (0.6 + mouseVelMag * 0.8);
+      float pushForce = influence * (1.2 + mouseVelMag * 1.5);
       
       if (uMouseDown > 0.5) {
         // Click vortex suction (pulls inward)
-        pos -= normDir * pushForce * 1.2;
+        pos -= normDir * pushForce * 1.5;
       } else {
         // High-velocity repulsion wave (pushes outward in 3D)
         pos += normDir * pushForce;

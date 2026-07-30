@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
+import { MorphingSphere } from "./MorphingSphere";
 import { ObsidianSculpture } from "./ObsidianSculpture";
 
 interface MonolithHeroProps {
@@ -135,7 +136,12 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
       {/* Cybernetic Orbital Holo-Rings */}
       <CyberOrbitalRings visible={visible} />
 
-      {/* Central Interactive Obsidian Fragmented Sculpture */}
+      {/* Inner Glowing Morphing Liquid Core */}
+      <group scale={0.75}>
+        <MorphingSphere visible={visible} />
+      </group>
+
+      {/* Outer Fragmented Glass Obsidian Sculpture */}
       <ObsidianSculpture />
     </group>
   );
