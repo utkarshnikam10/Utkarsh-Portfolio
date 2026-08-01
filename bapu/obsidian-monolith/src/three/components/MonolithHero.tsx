@@ -216,13 +216,6 @@ function CyberOrbitalRings({ visible, speedFactor }: { visible: boolean; speedFa
           <torusGeometry args={[3.6, 0.05, 24, 120]} />
           <meshBasicMaterial color="#38bdf8" transparent opacity={0.9} />
         </mesh>
-        {/* Glowing Solar Energy Spheres */}
-        {[0, Math.PI * 0.5, Math.PI, Math.PI * 1.5].map((angle, i) => (
-          <mesh key={i} position={[Math.cos(angle) * 3.6, Math.sin(angle) * 3.6, 0]}>
-            <sphereGeometry args={[0.14, 16, 16]} />
-            <meshBasicMaterial color="#ffff23" />
-          </mesh>
-        ))}
       </group>
 
       {/* Ring 2: Thick Gold Gyro Ring */}
@@ -349,11 +342,6 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
 
       {/* Thick Gyroscopic Holo-Rings & Outer Cage */}
       <CyberOrbitalRings visible={visible} speedFactor={pointerSpeed.current} />
-
-      {/* Inner Glowing Morphing Liquid Core */}
-      <group scale={0.85}>
-        <MorphingSphere visible={visible} />
-      </group>
 
       {/* Outer Fragmented Glass Obsidian Sculpture */}
       <ObsidianSculpture />
