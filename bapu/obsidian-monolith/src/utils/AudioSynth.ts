@@ -151,6 +151,50 @@ class ProceduralAudioSynth {
     noiseOsc.start(time);
     noiseOsc.stop(time + 0.1);
   }
+
+  /**
+   * Crisp UI micro-tick for hover interactions on 3D elements.
+   * Very short, high-frequency click with fast decay.
+   */
+  public playHoverTick() {
+    if (!this.ctx || !this.isUnlocked) return;
+
+    const time = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(3200, time);
+    osc.frequency.exponentialRampToValueAtTime(1800, time + 0.015);
+
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(0.06, time + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(time);
+    osc.stop(time + 0.05);
+  }
+
+  /**
+   * Modulate sub-bass drone filter cutoff based on camera Z depth.
+   * Deeper camera positions = darker, muffled drone.
+   * Close camera = brighter, more present drone.
+   */
+  public updateCameraDepth(cameraZ: number) {
+    if (!this.ctx || !this.isUnlocked || !this.filter || !this.subGain) return;
+
+    // Map camera Z (typically 2–15) to filter cutoff (80–600 Hz)
+    const normalizedDepth = Math.max(0, Math.min(1, (cameraZ - 2) / 13));
+    const targetCutoff = 600 - normalizedDepth * 520; // closer = brighter
+    this.filter.frequency.setTargetAtTime(targetCutoff, this.ctx.currentTime, 0.1);
+
+    // Slightly increase drone volume when camera is close
+    const targetGain = 0.04 + (1 - normalizedDepth) * 0.04;
+    this.subGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.15);
+  }
 }
 
 export const audioSynth = new ProceduralAudioSynth();

@@ -3,6 +3,7 @@
 import React, { useRef, useMemo, useEffect, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { audioSynth } from "../../utils/AudioSynth";
 
 /**
  * ReactiveMicroParticleVoid — Hyper-responsive, ultra-luxury micro-particle system.
@@ -151,6 +152,8 @@ const microParticleVertexShader = /* glsl */ `
 
 const microParticleFragmentShader = /* glsl */ `
   uniform float uTime;
+  uniform float uMouseSpeed;
+  uniform float uScrollDelta;
 
   varying float vDepth;
   varying float vDistToMouse;
@@ -163,25 +166,26 @@ const microParticleFragmentShader = /* glsl */ `
     if (dist > 0.5) discard;
     float alphaEdge = 1.0 - smoothstep(0.2, 0.5, dist);
 
-    // Color Palette:
-    // Gold (#ffff23) around pointer -> Electric Cyan (#38bdf8) mid -> Dim Cobalt void
-    vec3 gold = vec3(1.00, 1.00, 0.14);
-    vec3 cyan = vec3(0.22, 0.74, 0.97);
-    vec3 dimCobalt = vec3(0.12, 0.15, 0.35);
+    // Color Temperature Palette:
+    // Deep Cobalt Blue -> Electric Cyan -> Thermal Electric Gold
+    vec3 deepCobalt = vec3(0.06, 0.09, 0.28);
+    vec3 electricCyan = vec3(0.22, 0.74, 0.97);
+    vec3 thermalGold = vec3(1.00, 0.85, 0.14);
 
-    // Use smoothstep for proximity glow to match physical influence
-    float mouseProximity = smoothstep(1.8, 0.0, vDistToMouse);
+    float speedFactor = clamp(uMouseSpeed * 0.12 + abs(uScrollDelta) * 1.5, 0.0, 1.0);
+    float mouseProximity = smoothstep(3.2, 0.0, vDistToMouse);
     float depthFactor = clamp(vDepth / 16.0, 0.0, 1.0);
 
-    vec3 col = mix(dimCobalt, cyan, 1.0 - depthFactor);
-    col = mix(col, gold, mouseProximity * 0.95);
+    vec3 col = mix(deepCobalt, electricCyan, 1.0 - depthFactor);
+    float heatGlow = clamp(mouseProximity * 0.9 + speedFactor * 0.7, 0.0, 1.0);
+    col = mix(col, thermalGold, heatGlow);
 
     // Twinkle pulse
     float twinkle = sin(uTime * 2.5 + vPhase * 6.28) * 0.2 + 0.8;
 
     // READABILITY & CONTRAST GUARD
     float baseAlpha = 0.12 + (1.0 - depthFactor) * 0.10;
-    float alpha = alphaEdge * (baseAlpha + mouseProximity * 0.75) * twinkle;
+    float alpha = alphaEdge * (baseAlpha + heatGlow * 0.75) * twinkle;
 
     gl_FragColor = vec4(col, alpha);
   }
@@ -272,6 +276,7 @@ export function ReactiveMicroParticleVoid() {
       uRayOrigin: { value: new THREE.Vector3() },
       uRayDirection: { value: new THREE.Vector3() },
       uMouseVel: { value: new THREE.Vector2(0, 0) },
+      uMouseSpeed: { value: 0 },
       uMouseDown: { value: 0 },
     }),
     []
@@ -296,12 +301,13 @@ export function ReactiveMicroParticleVoid() {
     prevMouse.current.y = targetY;
 
     // Smooth velocity with safe clamp to prevent explosive jumps
-    // Adding || 0 to completely prevent NaN injection if vx/vy ever hit NaN
     const safeVx = THREE.MathUtils.clamp(vx || 0, -20, 20);
     const safeVy = THREE.MathUtils.clamp(vy || 0, -20, 20);
     
     mouseVel.current.x = THREE.MathUtils.lerp(mouseVel.current.x, safeVx, delta * 12.0);
     mouseVel.current.y = THREE.MathUtils.lerp(mouseVel.current.y, safeVy, delta * 12.0);
+
+    const speedMag = Math.sqrt(mouseVel.current.x * mouseVel.current.x + mouseVel.current.y * mouseVel.current.y);
 
     // Scroll delta
     if (typeof window !== "undefined") {
@@ -310,10 +316,14 @@ export function ReactiveMicroParticleVoid() {
       scrollDelta.current = THREE.MathUtils.lerp(scrollDelta.current, dy || 0, delta * 8.0);
     }
 
+    // Dynamic Spatial Web Audio Synthesizer Update
+    audioSynth.updateVelocity(speedMag * 0.05, Math.abs(scrollDelta.current));
+
     uniforms.uTime.value = state.clock.getElapsedTime();
     uniforms.uRayOrigin.value.copy(raycaster.ray.origin);
     uniforms.uRayDirection.value.copy(raycaster.ray.direction);
     uniforms.uMouseVel.value.set(mouseVel.current.x, mouseVel.current.y);
+    uniforms.uMouseSpeed.value = speedMag;
     uniforms.uMouseDown.value = isMouseDown.current ? 1.0 : 0.0;
     uniforms.uScrollDelta.value = scrollDelta.current;
   });

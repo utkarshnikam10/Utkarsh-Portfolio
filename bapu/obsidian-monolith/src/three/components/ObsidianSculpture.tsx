@@ -33,6 +33,11 @@ export function ObsidianSculpture({
   const [hoveredShard, setHoveredShard] = useState<number | null>(null);
   const [clickedShard, setClickedShard] = useState<number | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Spring physics: track each shard's velocity for organic recoil
+  const shardVelocities = useRef<Float32Array>(new Float32Array(8 * 3));
+  // Explosion state: click triggers full Voronoi detonation
+  const isExploded = useRef(false);
+  const explodeTimer = useRef(0);
 
   const { theme, themeConfig } = useTheme();
   const { pointer } = useThree();
@@ -123,9 +128,11 @@ export function ObsidianSculpture({
       `
     );
 
+    // Inject Snell-Law Chromatic Dispersion + Fresnel fragment shader
     shader.fragmentShader = `
       uniform vec3 uFresnelColor;
       uniform float uFresnelPower;
+      uniform float uTime;
       ${shader.fragmentShader}
     `;
 
@@ -135,8 +142,32 @@ export function ObsidianSculpture({
       #include <dithering_fragment>
       vec3 normVec = normalize(vNormal);
       vec3 viewDirVec = normalize(vViewPosition);
-      float fresnelVal = pow(1.0 - max(0.0, dot(normVec, viewDirVec)), uFresnelPower);
-      gl_FragColor.rgb += uFresnelColor * fresnelVal * 0.95;
+      float cosTheta = max(0.0, dot(normVec, viewDirVec));
+
+      // Schlick Fresnel approximation
+      float F0 = 0.04;
+      float fresnelVal = F0 + (1.0 - F0) * pow(1.0 - cosTheta, uFresnelPower);
+
+      // Snell's Law Chromatic Dispersion: split RGB by wavelength-dependent IOR
+      float baseIor = 1.52;
+      float dispersion = 0.06;
+      vec3 refractR = refract(-viewDirVec, normVec, 1.0 / (baseIor - dispersion));
+      vec3 refractG = refract(-viewDirVec, normVec, 1.0 / baseIor);
+      vec3 refractB = refract(-viewDirVec, normVec, 1.0 / (baseIor + dispersion));
+
+      // Rainbow edge splitting on sharp glass facets
+      vec3 chromaticEdge = vec3(
+        abs(refractR.x) + abs(refractR.z) * 0.3,
+        abs(refractG.y) + abs(refractG.x) * 0.3,
+        abs(refractB.z) + abs(refractB.y) * 0.3
+      ) * dispersion * 12.0;
+
+      // Animated spectral shimmer
+      float shimmer = sin(uTime * 2.0 + cosTheta * 8.0) * 0.15 + 0.85;
+      chromaticEdge *= shimmer;
+
+      gl_FragColor.rgb += uFresnelColor * fresnelVal * 0.7;
+      gl_FragColor.rgb += chromaticEdge * fresnelVal;
       `
     );
   };
@@ -199,7 +230,25 @@ export function ObsidianSculpture({
     setClickedShard(shardId);
     clickScaleRef.current = 1.08;
     playSelectSound();
-    setTimeout(() => setClickedShard(null), 300);
+
+    // Trigger full Voronoi explosion: all shards detonate outward
+    isExploded.current = true;
+    explodeTimer.current = 0;
+
+    // Inject outward velocity impulse into every shard
+    for (let i = 0; i < 8; i++) {
+      const shard = shards[i];
+      if (!shard) continue;
+      const force = i === shardId ? 18.0 : 8.0 + Math.random() * 4.0;
+      shardVelocities.current[i * 3] = shard.direction.x * force;
+      shardVelocities.current[i * 3 + 1] = shard.direction.y * force;
+      shardVelocities.current[i * 3 + 2] = shard.direction.z * force;
+    }
+
+    setTimeout(() => {
+      setClickedShard(null);
+      isExploded.current = false;
+    }, 1800);
   };
 
   const handleShardOver = (e: ThreeEvent<PointerEvent>, shardId: number) => {
@@ -285,52 +334,73 @@ export function ObsidianSculpture({
       }
     }
 
+    // Track explosion timer for spring recoil
+    if (isExploded.current) {
+      explodeTimer.current += delta;
+    }
+
     if (shardsGroupRef.current) {
       shardsGroupRef.current.children.forEach((child, idx) => {
         const shardData = shards[idx];
         if (!shardData) return;
 
         const isThisHovered = hoveredShard === idx;
-        const isThisClicked = clickedShard === idx;
+
+        // Spring physics: apply velocity then damp toward rest position
+        const vIdx = idx * 3;
+        const springK = 6.0;  // Spring stiffness
+        const damping = 0.92; // Velocity damping per frame
 
         let explosionDistance = progress * 2.8;
         if (isThisHovered) explosionDistance += 0.35;
-        if (isThisClicked) explosionDistance += 0.5;
 
-        const targetX =
-          shardData.initialPos.x + shardData.direction.x * explosionDistance;
-        const targetY =
-          shardData.initialPos.y + shardData.direction.y * explosionDistance;
-        const targetZ =
-          shardData.initialPos.z + shardData.direction.z * explosionDistance;
+        const restX = shardData.initialPos.x + shardData.direction.x * explosionDistance;
+        const restY = shardData.initialPos.y + shardData.direction.y * explosionDistance;
+        const restZ = shardData.initialPos.z + shardData.direction.z * explosionDistance;
 
-        child.position.x = THREE.MathUtils.lerp(
-          child.position.x,
-          targetX,
-          delta * 5.0
-        );
-        child.position.y = THREE.MathUtils.lerp(
-          child.position.y,
-          targetY,
-          delta * 5.0
-        );
-        child.position.z = THREE.MathUtils.lerp(
-          child.position.z,
-          targetZ,
-          delta * 5.0
-        );
+        if (isExploded.current) {
+          // Apply velocity impulse + spring force back toward rest
+          const dx = child.position.x - restX;
+          const dy = child.position.y - restY;
+          const dz = child.position.z - restZ;
 
-        if (!reducedMotion) {
-          child.rotation.x += delta * shardData.rotAxis.x * progress * 1.5;
-          child.rotation.y += delta * shardData.rotAxis.y * progress * 1.5;
-          child.rotation.z += delta * shardData.rotAxis.z * progress * 1.5;
+          // Spring acceleration: F = -k * displacement
+          shardVelocities.current[vIdx] += -springK * dx * delta;
+          shardVelocities.current[vIdx + 1] += -springK * dy * delta;
+          shardVelocities.current[vIdx + 2] += -springK * dz * delta;
+
+          // Damping
+          shardVelocities.current[vIdx] *= damping;
+          shardVelocities.current[vIdx + 1] *= damping;
+          shardVelocities.current[vIdx + 2] *= damping;
+
+          // Integrate position
+          child.position.x += shardVelocities.current[vIdx] * delta;
+          child.position.y += shardVelocities.current[vIdx + 1] * delta;
+          child.position.z += shardVelocities.current[vIdx + 2] * delta;
+
+          // Extra spin during explosion
+          child.rotation.x += delta * shardData.rotAxis.x * 4.0;
+          child.rotation.y += delta * shardData.rotAxis.y * 4.0;
+          child.rotation.z += delta * shardData.rotAxis.z * 4.0;
+        } else {
+          // Normal lerp animation
+          child.position.x = THREE.MathUtils.lerp(child.position.x, restX, delta * 5.0);
+          child.position.y = THREE.MathUtils.lerp(child.position.y, restY, delta * 5.0);
+          child.position.z = THREE.MathUtils.lerp(child.position.z, restZ, delta * 5.0);
+
+          if (!reducedMotion) {
+            child.rotation.x += delta * shardData.rotAxis.x * progress * 1.5;
+            child.rotation.y += delta * shardData.rotAxis.y * progress * 1.5;
+            child.rotation.z += delta * shardData.rotAxis.z * progress * 1.5;
+          }
         }
 
         const mesh = child as THREE.Mesh;
         if (mesh.material && mesh.material instanceof THREE.MeshPhysicalMaterial) {
           const targetEmissive = isThisHovered
             ? 0.95
-            : progress * 0.85;
+            : isExploded.current ? 1.2 : progress * 0.85;
 
           mesh.material.emissiveIntensity = THREE.MathUtils.lerp(
             mesh.material.emissiveIntensity,
@@ -397,14 +467,14 @@ export function ObsidianSculpture({
             >
               <meshPhysicalMaterial
                 color={themeConfig.bg}
-                transmission={theme === "EDITORIAL" ? 0.96 : 0.4}
-                roughness={theme === "EDITORIAL" ? 0.04 : 0.08}
+                transmission={theme === "EDITORIAL" ? 0.96 : 0.6}
+                roughness={theme === "EDITORIAL" ? 0.04 : 0.06}
                 ior={1.52}
-                thickness={1.4}
+                thickness={1.8}
                 clearcoat={1.0}
-                clearcoatRoughness={0.02}
-                metalness={theme === "TACTICAL_CAD" ? 0.95 : 0.1}
-                dispersion={0.04}
+                clearcoatRoughness={0.01}
+                metalness={theme === "TACTICAL_CAD" ? 0.95 : 0.08}
+                dispersion={0.06}
                 reflectivity={1.0}
                 wireframe={theme === "BRUTALIST"}
                 flatShading={true}

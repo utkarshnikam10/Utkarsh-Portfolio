@@ -41,6 +41,8 @@ function SpatialAudioUpdater() {
       camera.position.z,
       activeChapter
     );
+    // Modulate sub-bass drone filter based on camera Z depth
+    audioSynth.updateCameraDepth(camera.position.z);
   });
 
   return null;
