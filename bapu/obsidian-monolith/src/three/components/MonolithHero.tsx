@@ -11,30 +11,59 @@ interface MonolithHeroProps {
 }
 
 /**
- * HelixOrbitalStream — High-speed 3D energy helix orbiting the monolith centerpiece.
+ * KineticShockwaveBurst — Blinding energy ring that expands outward when clicked or hovered.
+ */
+function KineticShockwaveBurst({ visible }: { visible: boolean }) {
+  const ringRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (!visible || !ringRef.current) return;
+    const t = state.clock.getElapsedTime();
+    const scale = (t * 2.5) % 4.5 + 0.5;
+    const opacity = Math.max(0, 1.0 - scale / 4.5);
+
+    ringRef.current.scale.set(scale, scale, scale);
+    const mat = ringRef.current.material as THREE.MeshBasicMaterial;
+    if (mat) mat.opacity = opacity * 0.7;
+  });
+
+  if (!visible) return null;
+
+  return (
+    <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[1.0, 1.15, 64]} />
+      <meshBasicMaterial
+        color="#38bdf8"
+        transparent
+        opacity={0.6}
+        blending={THREE.AdditiveBlending}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
+}
+
+/**
+ * HelixOrbitalStream — Vibrant 3D energy double-helix ribbon orbiting the centerpiece.
  */
 function HelixOrbitalStream({ visible }: { visible: boolean }) {
   const pointsRef = useRef<THREE.Points>(null);
-  const count = 400;
+  const count = 600;
 
-  const { positions, colors, phases } = useMemo(() => {
+  const { positions, colors } = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
-    const ph = new Float32Array(count);
 
-    const color1 = new THREE.Color("#38bdf8"); // Cyan
+    const color1 = new THREE.Color("#38bdf8"); // Electric Cyan
     const color2 = new THREE.Color("#ffff23"); // Solar Gold
-    const color3 = new THREE.Color("#e879f9"); // Magenta
+    const color3 = new THREE.Color("#f43f5e"); // Crimson Flash
 
     for (let i = 0; i < count; i++) {
       const p = i / count;
-      ph[i] = p * Math.PI * 2;
-
-      // Initial double helix path
       const strand = i % 2 === 0 ? 1 : -1;
-      const radius = 2.8 + Math.sin(p * Math.PI * 6) * 0.4;
-      const angle = p * Math.PI * 12 * strand;
-      const y = (p - 0.5) * 7.0;
+      const radius = 3.0 + Math.sin(p * Math.PI * 8) * 0.5;
+      const angle = p * Math.PI * 14 * strand;
+      const y = (p - 0.5) * 8.0;
 
       pos[i * 3] = Math.cos(angle) * radius;
       pos[i * 3 + 1] = y;
@@ -46,7 +75,7 @@ function HelixOrbitalStream({ visible }: { visible: boolean }) {
       col[i * 3 + 2] = pickColor.b;
     }
 
-    return { positions: pos, colors: col, phases: ph };
+    return { positions: pos, colors: col };
   }, [count]);
 
   useFrame((state) => {
@@ -58,11 +87,11 @@ function HelixOrbitalStream({ visible }: { visible: boolean }) {
     for (let i = 0; i < count; i++) {
       const strand = i % 2 === 0 ? 1 : -1;
       const p = i / count;
-      const angle = p * Math.PI * 12 * strand + t * (1.8 + strand * 0.5);
-      const radius = 2.6 + Math.sin(t * 2.0 + p * Math.PI * 8) * 0.5;
+      const angle = p * Math.PI * 14 * strand + t * (2.2 + strand * 0.6);
+      const radius = 2.8 + Math.sin(t * 2.5 + p * Math.PI * 10) * 0.6;
 
       array[i * 3] = Math.cos(angle) * radius;
-      array[i * 3 + 1] = ((p - 0.5) * 7.0 + Math.sin(t * 1.5 + p * 6.28) * 0.3);
+      array[i * 3 + 1] = ((p - 0.5) * 8.0 + Math.sin(t * 2.0 + p * 6.28) * 0.4);
       array[i * 3 + 2] = Math.sin(angle) * radius;
     }
 
@@ -84,10 +113,10 @@ function HelixOrbitalStream({ visible }: { visible: boolean }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.06}
+        size={0.18}
         vertexColors
         transparent
-        opacity={0.85}
+        opacity={0.9}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
@@ -96,7 +125,7 @@ function HelixOrbitalStream({ visible }: { visible: boolean }) {
 }
 
 /**
- * EnergyQuasarBeam — Dual vertical laser light pillars shooting out top/bottom.
+ * EnergyQuasarBeam — Thick dual laser pillars shooting out top & bottom poles.
  */
 function EnergyQuasarBeam({ visible }: { visible: boolean }) {
   const topMeshRef = useRef<THREE.Mesh>(null);
@@ -105,13 +134,13 @@ function EnergyQuasarBeam({ visible }: { visible: boolean }) {
   useFrame((state) => {
     if (!visible) return;
     const t = state.clock.getElapsedTime();
-    const pulse = Math.sin(t * 4.0) * 0.15 + 0.85;
+    const pulse = Math.sin(t * 5.0) * 0.25 + 1.0;
 
     if (topMeshRef.current) {
-      topMeshRef.current.scale.set(pulse, 1.0 + Math.sin(t * 3.0) * 0.2, pulse);
+      topMeshRef.current.scale.set(pulse, 1.0 + Math.sin(t * 3.5) * 0.3, pulse);
     }
     if (botMeshRef.current) {
-      botMeshRef.current.scale.set(pulse, 1.0 + Math.cos(t * 3.0) * 0.2, pulse);
+      botMeshRef.current.scale.set(pulse, 1.0 + Math.cos(t * 3.5) * 0.3, pulse);
     }
   });
 
@@ -120,23 +149,23 @@ function EnergyQuasarBeam({ visible }: { visible: boolean }) {
   return (
     <group>
       {/* Top Beam */}
-      <mesh ref={topMeshRef} position={[0, 4.5, 0]}>
-        <cylinderGeometry args={[0.02, 0.4, 6.0, 16, 1, true]} />
+      <mesh ref={topMeshRef} position={[0, 4.8, 0]}>
+        <cylinderGeometry args={[0.12, 0.7, 7.0, 32, 1, true]} />
         <meshBasicMaterial
           color="#38bdf8"
           transparent
-          opacity={0.4}
+          opacity={0.65}
           blending={THREE.AdditiveBlending}
           side={THREE.DoubleSide}
         />
       </mesh>
       {/* Bottom Beam */}
-      <mesh ref={botMeshRef} position={[0, -4.5, 0]}>
-        <cylinderGeometry args={[0.4, 0.02, 6.0, 16, 1, true]} />
+      <mesh ref={botMeshRef} position={[0, -4.8, 0]}>
+        <cylinderGeometry args={[0.7, 0.12, 7.0, 32, 1, true]} />
         <meshBasicMaterial
           color="#ffff23"
           transparent
-          opacity={0.4}
+          opacity={0.65}
           blending={THREE.AdditiveBlending}
           side={THREE.DoubleSide}
         />
@@ -146,39 +175,34 @@ function EnergyQuasarBeam({ visible }: { visible: boolean }) {
 }
 
 /**
- * CyberOrbitalRings — 5 nested gyroscopic glowing holographic rings with differential rotation.
+ * CyberOrbitalRings — Thick, high-contrast gyroscopic holo-rings with glowing energy nodes.
  */
 function CyberOrbitalRings({ visible, speedFactor }: { visible: boolean; speedFactor: number }) {
   const ring1Ref = useRef<THREE.Group>(null);
   const ring2Ref = useRef<THREE.Group>(null);
   const ring3Ref = useRef<THREE.Group>(null);
   const ring4Ref = useRef<THREE.Group>(null);
-  const ring5Ref = useRef<THREE.Group>(null);
 
   useFrame((state, delta) => {
     if (!visible) return;
     const t = state.clock.getElapsedTime();
-    const boost = 1.0 + speedFactor * 3.5;
+    const boost = 1.0 + speedFactor * 4.0;
 
     if (ring1Ref.current) {
-      ring1Ref.current.rotation.z += delta * 0.4 * boost;
-      ring1Ref.current.rotation.x = Math.sin(t * 0.5) * 0.3;
+      ring1Ref.current.rotation.z += delta * 0.6 * boost;
+      ring1Ref.current.rotation.x = Math.sin(t * 0.8) * 0.4;
     }
     if (ring2Ref.current) {
-      ring2Ref.current.rotation.z -= delta * 0.6 * boost;
-      ring2Ref.current.rotation.y = Math.cos(t * 0.6) * 0.4;
+      ring2Ref.current.rotation.z -= delta * 0.8 * boost;
+      ring2Ref.current.rotation.y = Math.cos(t * 0.9) * 0.5;
     }
     if (ring3Ref.current) {
-      ring3Ref.current.rotation.x += delta * 0.5 * boost;
-      ring3Ref.current.rotation.y += delta * 0.3 * boost;
+      ring3Ref.current.rotation.x += delta * 0.7 * boost;
+      ring3Ref.current.rotation.y += delta * 0.4 * boost;
     }
     if (ring4Ref.current) {
-      ring4Ref.current.rotation.y -= delta * 0.7 * boost;
-      ring4Ref.current.rotation.z += delta * 0.2 * boost;
-    }
-    if (ring5Ref.current) {
-      ring5Ref.current.rotation.x -= delta * 0.3 * boost;
-      ring5Ref.current.rotation.z -= delta * 0.5 * boost;
+      ring4Ref.current.rotation.y -= delta * 0.9 * boost;
+      ring4Ref.current.rotation.z += delta * 0.3 * boost;
     }
   });
 
@@ -186,56 +210,48 @@ function CyberOrbitalRings({ visible, speedFactor }: { visible: boolean; speedFa
 
   return (
     <group>
-      {/* Ring 1: Outer Cyan Torus Array */}
+      {/* Ring 1: Thick Cyan Torus */}
       <group ref={ring1Ref} rotation={[Math.PI / 3, 0, 0]}>
         <mesh>
-          <torusGeometry args={[3.6, 0.015, 16, 120]} />
-          <meshBasicMaterial color="#38bdf8" transparent opacity={0.75} />
+          <torusGeometry args={[3.6, 0.05, 24, 120]} />
+          <meshBasicMaterial color="#38bdf8" transparent opacity={0.9} />
         </mesh>
-        {/* Orbital Energy Nodes */}
+        {/* Glowing Solar Energy Spheres */}
         {[0, Math.PI * 0.5, Math.PI, Math.PI * 1.5].map((angle, i) => (
           <mesh key={i} position={[Math.cos(angle) * 3.6, Math.sin(angle) * 3.6, 0]}>
-            <sphereGeometry args={[0.06, 16, 16]} />
+            <sphereGeometry args={[0.14, 16, 16]} />
             <meshBasicMaterial color="#ffff23" />
           </mesh>
         ))}
       </group>
 
-      {/* Ring 2: Solar Gold Gyro Ring */}
+      {/* Ring 2: Thick Gold Gyro Ring */}
       <group ref={ring2Ref} rotation={[-Math.PI / 4, Math.PI / 4, 0]}>
         <mesh>
-          <torusGeometry args={[3.0, 0.012, 16, 100]} />
-          <meshBasicMaterial color="#ffff23" transparent opacity={0.65} />
+          <torusGeometry args={[3.0, 0.04, 24, 100]} />
+          <meshBasicMaterial color="#ffff23" transparent opacity={0.85} />
         </mesh>
         {[0, Math.PI * 0.67, Math.PI * 1.33].map((angle, i) => (
           <mesh key={i} position={[Math.cos(angle) * 3.0, Math.sin(angle) * 3.0, 0]}>
-            <octahedronGeometry args={[0.07, 0]} />
+            <octahedronGeometry args={[0.16, 0]} />
             <meshBasicMaterial color="#38bdf8" wireframe />
           </mesh>
         ))}
       </group>
 
-      {/* Ring 3: Magenta Quantum Energy Ring */}
+      {/* Ring 3: Magenta Quantum Ring */}
       <group ref={ring3Ref} rotation={[Math.PI / 6, -Math.PI / 3, Math.PI / 4]}>
         <mesh>
-          <torusGeometry args={[2.4, 0.01, 16, 90]} />
-          <meshBasicMaterial color="#e879f9" transparent opacity={0.6} />
+          <torusGeometry args={[2.4, 0.035, 20, 90]} />
+          <meshBasicMaterial color="#f43f5e" transparent opacity={0.8} />
         </mesh>
       </group>
 
-      {/* Ring 4: Laser Wireframe Outer Ring */}
+      {/* Ring 4: Outer Wireframe Cage */}
       <group ref={ring4Ref} rotation={[-Math.PI / 6, 0, Math.PI / 3]}>
         <mesh>
-          <torusGeometry args={[4.2, 0.008, 12, 80]} />
-          <meshBasicMaterial color="#38bdf8" transparent opacity={0.35} wireframe />
-        </mesh>
-      </group>
-
-      {/* Ring 5: Inner Tachyon Ring */}
-      <group ref={ring5Ref} rotation={[0, Math.PI / 2, 0]}>
-        <mesh>
-          <torusGeometry args={[1.8, 0.008, 16, 80]} />
-          <meshBasicMaterial color="#22c55e" transparent opacity={0.5} />
+          <icosahedronGeometry args={[4.0, 1]} />
+          <meshBasicMaterial color="#38bdf8" transparent opacity={0.2} wireframe />
         </mesh>
       </group>
     </group>
@@ -261,31 +277,31 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
     prevPointer.current.x = pointer.x;
     prevPointer.current.y = pointer.y;
 
-    const targetScale = visible ? 1.0 + Math.min(pointerSpeed.current * 0.02, 0.15) : 0.001;
+    const targetScale = visible ? 1.0 + Math.min(pointerSpeed.current * 0.04, 0.25) : 0.001;
     groupRef.current.scale.setScalar(
       THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, delta * 5.0)
     );
 
     if (visible) {
       // Dynamic kinetic 3D parallax tilt & sway
-      targetRotation.current.x = pointer.y * 0.45;
-      targetRotation.current.y = pointer.x * 0.55;
+      targetRotation.current.x = pointer.y * 0.55;
+      targetRotation.current.y = pointer.x * 0.65;
 
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
         groupRef.current.rotation.x,
         targetRotation.current.x,
-        delta * 4.0
+        delta * 4.5
       );
       groupRef.current.rotation.y = THREE.MathUtils.lerp(
         groupRef.current.rotation.y,
         targetRotation.current.y,
-        delta * 4.0
+        delta * 4.5
       );
 
       // Kinetic Z-roll when moving fast
       groupRef.current.rotation.z = THREE.MathUtils.lerp(
         groupRef.current.rotation.z,
-        -dx * 0.8,
+        -dx * 1.2,
         delta * 6.0
       );
     }
@@ -293,34 +309,37 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
 
   return (
     <group ref={groupRef}>
-      {/* Key Dynamic SpotLight */}
+      {/* High-Intensity Key SpotLight */}
       <spotLight
-        position={[5, 8, 7]}
-        angle={0.7}
+        position={[6, 9, 8]}
+        angle={0.8}
         penumbra={0.9}
-        intensity={visible ? 8.0 : 0}
+        intensity={visible ? 12.0 : 0}
         color="#ffffff"
       />
       {/* Electric Cyan Rim Light */}
       <directionalLight
-        position={[-5, 4, -4]}
-        intensity={visible ? 3.5 : 0}
+        position={[-6, 5, -4]}
+        intensity={visible ? 5.0 : 0}
         color="#38bdf8"
       />
       {/* Solar Gold Fill Light */}
       <pointLight
-        position={[0, -3, 4]}
-        intensity={visible ? 2.5 : 0}
+        position={[0, -4, 5]}
+        intensity={visible ? 4.0 : 0}
         color="#ffff23"
+        distance={12}
+      />
+      {/* Crimson/Magenta Backlight */}
+      <pointLight
+        position={[0, 4, -5]}
+        intensity={visible ? 3.5 : 0}
+        color="#f43f5e"
         distance={10}
       />
-      {/* Magenta Backlight */}
-      <pointLight
-        position={[0, 3, -4]}
-        intensity={visible ? 2.0 : 0}
-        color="#e879f9"
-        distance={8}
-      />
+
+      {/* Kinetic Energy Shockwave Pulse */}
+      <KineticShockwaveBurst visible={visible} />
 
       {/* Quasar Energy Pillars */}
       <EnergyQuasarBeam visible={visible} />
@@ -328,11 +347,11 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
       {/* Double Helix Orbital Particle Stream */}
       <HelixOrbitalStream visible={visible} />
 
-      {/* 5-Axis Gyroscopic Holo-Rings */}
+      {/* Thick Gyroscopic Holo-Rings & Outer Cage */}
       <CyberOrbitalRings visible={visible} speedFactor={pointerSpeed.current} />
 
       {/* Inner Glowing Morphing Liquid Core */}
-      <group scale={0.75}>
+      <group scale={0.85}>
         <MorphingSphere visible={visible} />
       </group>
 
