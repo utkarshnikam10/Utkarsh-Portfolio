@@ -124,55 +124,7 @@ function HelixOrbitalStream({ visible }: { visible: boolean }) {
   );
 }
 
-/**
- * EnergyQuasarBeam — Thick dual laser pillars shooting out top & bottom poles.
- */
-function EnergyQuasarBeam({ visible }: { visible: boolean }) {
-  const topMeshRef = useRef<THREE.Mesh>(null);
-  const botMeshRef = useRef<THREE.Mesh>(null);
 
-  useFrame((state) => {
-    if (!visible) return;
-    const t = state.clock.getElapsedTime();
-    const pulse = Math.sin(t * 5.0) * 0.25 + 1.0;
-
-    if (topMeshRef.current) {
-      topMeshRef.current.scale.set(pulse, 1.0 + Math.sin(t * 3.5) * 0.3, pulse);
-    }
-    if (botMeshRef.current) {
-      botMeshRef.current.scale.set(pulse, 1.0 + Math.cos(t * 3.5) * 0.3, pulse);
-    }
-  });
-
-  if (!visible) return null;
-
-  return (
-    <group>
-      {/* Top Beam */}
-      <mesh ref={topMeshRef} position={[0, 4.8, 0]}>
-        <cylinderGeometry args={[0.12, 0.7, 7.0, 32, 1, true]} />
-        <meshBasicMaterial
-          color="#38bdf8"
-          transparent
-          opacity={0.65}
-          blending={THREE.AdditiveBlending}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-      {/* Bottom Beam */}
-      <mesh ref={botMeshRef} position={[0, -4.8, 0]}>
-        <cylinderGeometry args={[0.7, 0.12, 7.0, 32, 1, true]} />
-        <meshBasicMaterial
-          color="#ffff23"
-          transparent
-          opacity={0.65}
-          blending={THREE.AdditiveBlending}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-    </group>
-  );
-}
 
 /**
  * CyberOrbitalRings — Thick, high-contrast gyroscopic holo-rings with glowing energy nodes.
@@ -319,9 +271,6 @@ export function MonolithHero({ visible }: MonolithHeroProps) {
 
       {/* Kinetic Energy Shockwave Pulse */}
       <KineticShockwaveBurst visible={visible} />
-
-      {/* Quasar Energy Pillars */}
-      <EnergyQuasarBeam visible={visible} />
 
       {/* Double Helix Orbital Particle Stream */}
       <HelixOrbitalStream visible={visible} />
