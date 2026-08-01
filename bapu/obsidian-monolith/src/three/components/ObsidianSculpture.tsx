@@ -140,7 +140,7 @@ export function ObsidianSculpture({
       `#include <dithering_fragment>`,
       `
       #include <dithering_fragment>
-      vec3 normVec = normalize(vNormal);
+      vec3 normVec = normalize(normal);
       vec3 viewDirVec = normalize(vViewPosition);
       float cosTheta = max(0.0, dot(normVec, viewDirVec));
 
