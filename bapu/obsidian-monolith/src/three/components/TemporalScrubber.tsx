@@ -84,7 +84,7 @@ export function TemporalScrubber({
   const wireframeMat = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
-        color: "#00ff41",
+        color: "#38bdf8",
         wireframe: true,
         transparent: true,
         opacity: 0.8,

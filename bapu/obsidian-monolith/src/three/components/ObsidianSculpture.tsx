@@ -444,11 +444,11 @@ export function ObsidianSculpture({
         <mesh ref={coreRef} geometry={coreGeometry}>
           <meshStandardMaterial
             color="#121216"
-            emissive={themeConfig.accent}
-            emissiveIntensity={0.1}
+            emissive="#38bdf8"
+            emissiveIntensity={0.05}
             roughness={0.2}
             metalness={0.9}
-            wireframe={theme === "BRUTALIST" || theme === "TACTICAL_CAD"}
+            wireframe={false}
           />
         </mesh>
 
@@ -467,19 +467,19 @@ export function ObsidianSculpture({
             >
               <meshPhysicalMaterial
                 color={themeConfig.bg}
-                transmission={theme === "EDITORIAL" ? 0.96 : 0.6}
-                roughness={theme === "EDITORIAL" ? 0.04 : 0.06}
+                transmission={0.96}
+                roughness={0.04}
                 ior={1.52}
                 thickness={1.8}
                 clearcoat={1.0}
                 clearcoatRoughness={0.01}
-                metalness={theme === "TACTICAL_CAD" ? 0.95 : 0.08}
+                metalness={0.08}
                 dispersion={0.06}
                 reflectivity={1.0}
-                wireframe={theme === "BRUTALIST"}
+                wireframe={false}
                 flatShading={true}
-                emissive={themeConfig.accent}
-                emissiveIntensity={theme === "BRUTALIST" ? 0.15 : 0.0}
+                emissive="#ffffff"
+                emissiveIntensity={0.0}
                 onBeforeCompile={handleBeforeCompile}
               />
             </mesh>

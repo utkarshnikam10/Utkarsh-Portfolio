@@ -24,8 +24,8 @@ export const THEME_CONFIGS: Record<ThemeMode, ThemeConfig> = {
     label: "01 // BRUTALIST",
     bg: "#08080a",
     surface: "#0f1015",
-    accent: "#ccff00", // Acid Lime
-    border: "rgba(204, 255, 0, 0.35)",
+    accent: "#38bdf8", // Electric Cyan
+    border: "rgba(56, 189, 248, 0.35)",
     borderRadius: "0px",
     fontHeading: "ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
   },
@@ -65,7 +65,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>("BRUTALIST");
+  const [theme, setThemeState] = useState<ThemeMode>("EDITORIAL");
   const [isLocked, setIsLocked] = useState(false);
 
   const setTheme = (mode: ThemeMode, manualLock = true) => {
