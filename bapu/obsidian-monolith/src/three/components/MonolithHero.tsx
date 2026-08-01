@@ -55,7 +55,7 @@ function HelixOrbitalStream({ visible }: { visible: boolean }) {
     const col = new Float32Array(count * 3);
 
     const color1 = new THREE.Color("#38bdf8"); // Electric Cyan
-    const color2 = new THREE.Color("#ffff23"); // Solar Gold
+    const color2 = new THREE.Color("#0284c7"); // Deep Azure Blue
     const color3 = new THREE.Color("#f43f5e"); // Crimson Flash
 
     for (let i = 0; i < count; i++) {
@@ -224,27 +224,13 @@ function CyberOrbitalRings({ visible, speedFactor }: { visible: boolean; speedFa
           <torusGeometry args={[3.0, 0.04, 24, 100]} />
           <meshBasicMaterial color="#ffff23" transparent opacity={0.85} />
         </mesh>
-        {[0, Math.PI * 0.67, Math.PI * 1.33].map((angle, i) => (
-          <mesh key={i} position={[Math.cos(angle) * 3.0, Math.sin(angle) * 3.0, 0]}>
-            <octahedronGeometry args={[0.16, 0]} />
-            <meshBasicMaterial color="#38bdf8" wireframe />
-          </mesh>
-        ))}
       </group>
 
-      {/* Ring 3: Magenta Quantum Ring */}
+      {/* Ring 3: Crimson Quantum Ring */}
       <group ref={ring3Ref} rotation={[Math.PI / 6, -Math.PI / 3, Math.PI / 4]}>
         <mesh>
           <torusGeometry args={[2.4, 0.035, 20, 90]} />
           <meshBasicMaterial color="#f43f5e" transparent opacity={0.8} />
-        </mesh>
-      </group>
-
-      {/* Ring 4: Outer Wireframe Cage */}
-      <group ref={ring4Ref} rotation={[-Math.PI / 6, 0, Math.PI / 3]}>
-        <mesh>
-          <icosahedronGeometry args={[4.0, 1]} />
-          <meshBasicMaterial color="#38bdf8" transparent opacity={0.2} wireframe />
         </mesh>
       </group>
     </group>
