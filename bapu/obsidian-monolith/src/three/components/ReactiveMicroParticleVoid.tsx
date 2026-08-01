@@ -209,12 +209,12 @@ export function ReactiveMicroParticleVoid() {
   // Track global pointer to bypass DOM overlay blocking Canvas events
   const globalPointer = useRef(new THREE.Vector2(0, 0));
 
-  const [particleCount, setParticleCount] = useState(35000);
+  const [particleCount, setParticleCount] = useState(12000);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const updateCount = () => {
-      setParticleCount(window.innerWidth <= 768 ? 8000 : 35000);
+      setParticleCount(window.innerWidth <= 768 ? 4000 : 12000);
     };
     updateCount();
     window.addEventListener("resize", updateCount);
@@ -250,19 +250,19 @@ export function ReactiveMicroParticleVoid() {
     const ph = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
-      const radius = 1.2 + Math.pow(Math.random(), 0.5) * 9.0;
+      const radius = 2.5 + Math.pow(Math.random(), 0.5) * 12.0;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
       pos[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
       pos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 14.0;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 18.0;
 
       vel[i * 3] = 0;
       vel[i * 3 + 1] = 0;
       vel[i * 3 + 2] = 0;
 
-      sz[i] = 1.0 + Math.random() * 1.6;
+      sz[i] = 0.6 + Math.random() * 0.8;
       ph[i] = Math.random();
     }
 
