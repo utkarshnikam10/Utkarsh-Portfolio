@@ -167,10 +167,10 @@ const microParticleFragmentShader = /* glsl */ `
     float alphaEdge = 1.0 - smoothstep(0.2, 0.5, dist);
 
     // Color Temperature Palette:
-    // Deep Cobalt Blue -> Electric Cyan -> Thermal Electric Gold
+    // Deep Cobalt Blue -> Electric Cyan -> Bright White (NO yellow = NO green)
     vec3 deepCobalt = vec3(0.06, 0.09, 0.28);
     vec3 electricCyan = vec3(0.22, 0.74, 0.97);
-    vec3 thermalGold = vec3(1.00, 0.85, 0.14);
+    vec3 hotWhite = vec3(0.95, 0.95, 1.00);
 
     float speedFactor = clamp(uMouseSpeed * 0.12 + abs(uScrollDelta) * 1.5, 0.0, 1.0);
     float mouseProximity = smoothstep(3.2, 0.0, vDistToMouse);
@@ -178,7 +178,7 @@ const microParticleFragmentShader = /* glsl */ `
 
     vec3 col = mix(deepCobalt, electricCyan, 1.0 - depthFactor);
     float heatGlow = clamp(mouseProximity * 0.9 + speedFactor * 0.7, 0.0, 1.0);
-    col = mix(col, thermalGold, heatGlow);
+    col = mix(col, hotWhite, heatGlow);
 
     // Twinkle pulse
     float twinkle = sin(uTime * 2.5 + vPhase * 6.28) * 0.2 + 0.8;
